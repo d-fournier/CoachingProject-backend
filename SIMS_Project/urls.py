@@ -18,9 +18,12 @@ from django.contrib import admin
 from rest_framework import routers
 
 from sport.views import SportViewSet
+from level.views import LevelViewSet
 
 router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
+router.register(r'levels', LevelViewSet)
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
