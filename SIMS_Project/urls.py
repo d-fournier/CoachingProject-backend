@@ -23,6 +23,7 @@ from level.views import LevelViewSet
 router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
 router.register(r'levels', LevelViewSet)
+router.register(r'users', UserProfileViewSet)
 
 
 urlpatterns = [
