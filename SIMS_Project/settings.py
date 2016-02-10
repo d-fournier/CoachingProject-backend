@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'coach_me',
+    'user',
+    'level',
+    'sport',
+    'message',
 ]
 
 MIDDLEWARE_CLASSES = [
