@@ -40,10 +40,7 @@ Puis les éléments nécessaires au projet :
 **pip install markdown**  
 **pip install django-filter**  
 
-Vous devez ensuite créer un projet Django :  
-**django-admin startproject [nom_du_projet]**    
-
-Puis cloner le repository dans ce dossier (au même niveau que le fichier manage.py)
+Puis cloner le repository dans ce dossier (au même niveau que les dossiers bin et lib)
 
 **N'oubliez pas de vous mettre à chaque fois dans votre virtualenv avant de travailler sur le projet !**
 
