@@ -43,7 +43,7 @@ Puis les éléments nécessaires au projet :
 Vous devez ensuite créer un projet Django :  
 **django-admin startproject [nom_du_projet]**    
 
-Puis cloner le repository dans ce dossier.
+Puis cloner le repository dans ce dossier (au même niveau que le fichier manage.py)
 
 **N'oubliez pas de vous mettre à chaque fois dans votre virtualenv avant de travailler sur le projet !**
 
