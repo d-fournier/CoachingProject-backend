@@ -13,6 +13,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 		username = self.request.query_params.get('username', None)
 		if username is not None :
 			queryset = queryset.filter(user__username=username)
-		coach = self.request.query_params.get('isCoach', False)
-		queryset = queryset.filter(isCoach=coach)
+		coach = self.request.query_params.get('coach', None)
+		if coach is not None :
+			queryset = queryset.filter(isCoach=coach)
 		return queryset
