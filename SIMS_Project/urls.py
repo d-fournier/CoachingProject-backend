@@ -26,7 +26,6 @@ router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
 router.register(r'levels', LevelViewSet)
 router.register(r'users', UserProfileViewSet, base_name='users')
-router.register(r'coachs', CoachsViewSet, base_name='coachs')
 router.register(r'relations', RelationViewSet)
 
 
