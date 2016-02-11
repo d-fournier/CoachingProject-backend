@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'level',
     'sport',
     'message',
+    'relation',
 ]
 
 MIDDLEWARE_CLASSES = [
