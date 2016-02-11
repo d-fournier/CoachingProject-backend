@@ -7,4 +7,4 @@ from rest_framework import viewsets, permissions
 class SportViewSet(viewsets.ModelViewSet):
 	queryset = Sport.objects.all()
 	serializer_class = SportSerializer
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+	permission_classes = [permissions.DjangoModelPermissions]
