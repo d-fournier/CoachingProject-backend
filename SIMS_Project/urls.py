@@ -20,11 +20,13 @@ from rest_framework import routers
 from sport.views import SportViewSet
 from level.views import LevelViewSet
 from user.views import UserProfileViewSet
+from message.views import MessageViewSet
 
 router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
 router.register(r'levels', LevelViewSet)
 router.register(r'users', UserProfileViewSet)
+router.register(r'messages', MessageViewSet)
 
 
 urlpatterns = [

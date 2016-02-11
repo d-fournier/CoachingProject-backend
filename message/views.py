@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .serializers import UserProfileSerializer
-from .models import UserProfile
+from .serializers import MessageSerializer
+from .models import Message
 from rest_framework import viewsets, permissions
 
 # Create your views here.
