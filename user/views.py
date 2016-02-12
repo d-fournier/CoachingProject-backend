@@ -16,4 +16,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 		coach = self.request.query_params.get('coach', None)
 		if coach is not None :
 			queryset = queryset.filter(isCoach=coach)
+		sport = self.request.query_params.get('sport', None)
+		if sport is not None :
+			queryset = queryset.filter(levels__sport__id=sport)
 		return queryset
