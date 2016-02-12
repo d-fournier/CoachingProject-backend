@@ -19,7 +19,7 @@ from rest_framework import routers
 
 from sport.views import SportViewSet
 from level.views import LevelViewSet
-from user.views import UserProfileViewSet, CoachsViewSet
+from user.views import UserProfileViewSet
 from relation.views import RelationViewSet
 
 router = routers.DefaultRouter()
