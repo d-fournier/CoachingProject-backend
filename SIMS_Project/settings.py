@@ -20,12 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'c=#a@6ph&-w-v61bbw(m9ini*rjbx4%7jp-!5=!!2uhl)d3_8x'
+DEFAULT_KEY = 'c=#a@6ph&-w-v61bbw(m9ini*rjbx4%7jp-!5=!!2uhl)d3_8x'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', DEFAULT_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+debugValue = os.environ.get('DJANGO_DEBUG', 'True')
+DEBUG = debugValue == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -80,12 +82,20 @@ WSGI_APPLICATION = 'SIMS_Project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+DATABASE_TYPE = os.environ.get('DJANGO_DATABASE_TYPE', 'SQLITE3')
+if DATABASE_TYPE == 'SQLITE3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+elif DATABASE_TYPE == 'POSTGRES':
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config()
+    }
+
 
 
 # Password validation
@@ -125,3 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+### HEROKU config
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
