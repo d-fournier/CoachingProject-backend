@@ -8,7 +8,7 @@ class UserProfile(models.Model):
 	age = models.PositiveIntegerField()
 	isCoach = models.BooleanField(default=False)
 	city = models.CharField(max_length=50)
-	description = models.CharField(max_length=400)
+	description = models.CharField(max_length=400, blank=True)
 	levels = models.ManyToManyField(Level, blank=True)
 
 	def __str__(self):
