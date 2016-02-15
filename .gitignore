@@ -76,6 +76,8 @@ db.sqlite3
 media
 
 
+### Static compiled files ###
+/staticfiles/
 
 ### VirtualEnv ###
 /venv/
