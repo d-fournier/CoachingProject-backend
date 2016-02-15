@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
+from auth_djoser import views
+
 
 from sport.views import SportViewSet
 from level.views import LevelViewSet
@@ -28,10 +30,10 @@ router.register(r'levels', LevelViewSet)
 router.register(r'users', UserProfileViewSet, base_name='users')
 router.register(r'relations', RelationViewSet)
 
-
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
    	url(r'^api-auth/', include('rest_framework.urls')),
    	url(r'^api/', include(router.urls)),
+    url(r'^auth/', include('auth_djoser.urls'))
 ]
 
