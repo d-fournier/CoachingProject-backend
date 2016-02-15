@@ -6,6 +6,9 @@ from rest_framework.reverse import reverse
 from django.contrib.auth.tokens import default_token_generator
 from . import serializers, settings, utils, signals
 
+from user.models import UserProfile
+from datetime import datetime
+
 User = get_user_model()
 
 
@@ -61,6 +64,21 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
         signals.user_registered.send(sender=self.__class__, user=instance, request=self.request)
         if settings.get('SEND_ACTIVATION_EMAIL'):
             self.send_email(**self.get_send_email_kwargs(instance))
+        try:
+            
+            displayName = self.request.data['displayName']
+            birthdate = datetime.strptime(self.request.data['birthdate'],'%Y-%m-%d')
+            isCoach = self.request.data['isCoach']
+            city = self.request.data['city']
+            description = self.request.data['description']
+            levels = self.request.data['levels']
+            up = UserProfile.objects.create(user=instance,displayName=displayName,birthdate=birthdate,isCoach=isCoach,city=city,description=description)
+            up.levels = levels
+            up.save()
+        except KeyError:
+            print('Only asked for simpler user creation')
+
+
 
     def get_email_context(self, user):
         context = super(RegistrationView, self).get_email_context(user)

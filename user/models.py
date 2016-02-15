@@ -6,7 +6,7 @@ from level.models import Level
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	displayName = models.CharField(max_length=50)
-	age = models.PositiveIntegerField()
+	birthdate = models.DateField(blank=True)
 	isCoach = models.BooleanField(default=False)
 	city = models.CharField(max_length=50)
 	description = models.TextField(max_length=400, blank=True)
