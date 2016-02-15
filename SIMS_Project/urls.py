@@ -17,7 +17,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 from auth_djoser import views
-from django.contrib.auth import get_user_model
 
 
 from sport.views import SportViewSet
@@ -30,8 +29,6 @@ router.register(r'sports', SportViewSet)
 router.register(r'levels', LevelViewSet)
 router.register(r'users', UserProfileViewSet, base_name='users')
 router.register(r'relations', RelationViewSet)
-
-User = get_user_model()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
