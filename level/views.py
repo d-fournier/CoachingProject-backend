@@ -7,4 +7,4 @@ from rest_framework import viewsets, permissions
 class LevelViewSet(viewsets.ModelViewSet):
 	queryset = Level.objects.all()
 	serializer_class = LevelSerializer
-	permission_classes= [permissions.DjangoModelPermissions]
+	permission_classes= [permissions.IsAuthenticatedOrReadOnly]
