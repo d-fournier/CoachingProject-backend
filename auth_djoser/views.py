@@ -73,7 +73,7 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
         try:   
             displayName = self.request.data['displayName']
             birthdate = datetime.strptime(self.request.data['birthdate'],'%Y-%m-%d')
-            isCoach = self.request.data['isCoach']
+            isCoach = (self.request.data['isCoach'] == 'true')
             city = self.request.data['city']
             description = self.request.data['description']
             levels = self.request.data['levels']  
