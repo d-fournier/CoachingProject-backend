@@ -70,9 +70,7 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
 
 
     def perform_create(self, serializer):
-        try:
-            u = User(serializer.data)
-             
+        try:   
             displayName = self.request.data['displayName']
             birthdate = datetime.strptime(self.request.data['birthdate'],'%Y-%m-%d')
             isCoach = self.request.data['isCoach']
@@ -80,7 +78,7 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
             description = self.request.data['description']
             levels = self.request.data['levels']  
 
-            u.save()
+            u = serializer.save()
             signals.user_registered.send(sender=self.__class__, user=u, request=self.request)
             if settings.get('SEND_ACTIVATION_EMAIL'):
                 self.send_email(**self.get_send_email_kwargs(u))
