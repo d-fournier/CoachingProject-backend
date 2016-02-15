@@ -59,24 +59,39 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
     subject_template_name = 'activation_email_subject.txt'
     plain_body_template_name = 'activation_email_body.txt'
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if self.perform_create(serializer):
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response('Missing arguments for UserProfile', status=status.HTTP_400_BAD_REQUEST)
+
+
     def perform_create(self, serializer):
-        instance = serializer.save()
-        signals.user_registered.send(sender=self.__class__, user=instance, request=self.request)
-        if settings.get('SEND_ACTIVATION_EMAIL'):
-            self.send_email(**self.get_send_email_kwargs(instance))
         try:
-            
+            u = User(serializer.data)
+             
             displayName = self.request.data['displayName']
             birthdate = datetime.strptime(self.request.data['birthdate'],'%Y-%m-%d')
             isCoach = self.request.data['isCoach']
             city = self.request.data['city']
             description = self.request.data['description']
-            levels = self.request.data['levels']
-            up = UserProfile.objects.create(user=instance,displayName=displayName,birthdate=birthdate,isCoach=isCoach,city=city,description=description)
+            levels = self.request.data['levels']  
+
+            u.save()
+            signals.user_registered.send(sender=self.__class__, user=u, request=self.request)
+            if settings.get('SEND_ACTIVATION_EMAIL'):
+                self.send_email(**self.get_send_email_kwargs(u))
+             
+            up = UserProfile.objects.create(user=u,displayName=displayName,birthdate=birthdate,isCoach=isCoach,city=city,description=description)
             up.levels = levels
             up.save()
+            return True
+
         except KeyError:
-            print('Only asked for simpler user creation')
+            return False
 
 
 
