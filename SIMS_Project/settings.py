@@ -20,14 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-DEFAULT_KEY = 'c=#a@6ph&-w-v61bbw(m9ini*rjbx4%7jp-!5=!!2uhl)d3_8x'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', DEFAULT_KEY)
+SECRET_KEY = 'c=#a@6ph&-w-v61bbw(m9ini*rjbx4%7jp-!5=!!2uhl)d3_8x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-debugValue = os.environ.get('DJANGO_DEBUG', 'True')
-DEBUG = debugValue == 'True'
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -48,6 +46,14 @@ INSTALLED_APPS = [
     'message',
     'relation',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,20 +90,12 @@ WSGI_APPLICATION = 'SIMS_Project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASE_TYPE = os.environ.get('DJANGO_DATABASE_TYPE', 'SQLITE3')
-if DATABASE_TYPE == 'SQLITE3':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-elif DATABASE_TYPE == 'POSTGRES':
-    import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.config()
-    }
-
+}
 
 
 # Password validation
@@ -136,12 +134,4 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
-
-### HEROKU config
-# Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
