@@ -11,8 +11,11 @@ class MessageViewSet(viewsets.ModelViewSet):
 	serializer_class = MessageSerializer
 	permission_classes= [permissions.IsAuthenticatedOrReadOnly]
 
-	def get_queryset(self):
-		queryset = Message.objects.filter(Q(to_relation__coach__user=self.request.user)|Q(to_relation__trainee__user=self.request.user))
+	def get_queryset(self):		
+		if self.request.user.is_authenticated():
+			queryset = Message.objects.filter(Q(to_relation__coach__user=self.request.user)|Q(to_relation__trainee__user=self.request.user))
+		else:
+			queryset=Message.objects.none()
 		return queryset
 
 	def create(self,request):
@@ -27,7 +30,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 				headers = self.get_success_headers(serializer.data)
 				return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
-			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+			return Response('Relation not accessible', status=status.HTTP_400_BAD_REQUEST)
 
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
