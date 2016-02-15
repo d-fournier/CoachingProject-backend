@@ -37,15 +37,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
    	url(r'^api-auth/', include('rest_framework.urls')),
    	url(r'^api/', include(router.urls)),
-    url(r'^me/$', views.UserView.as_view(), name='user'),
-    url(r'^register/$', views.RegistrationView.as_view(), name='register'),
-    url(r'^activate/$', views.ActivationView.as_view(), name='activate'),
-    url(r'^{0}/$'.format(User.USERNAME_FIELD), views.SetUsernameView.as_view(), name='set_username'),
-    url(r'^password/$', views.SetPasswordView.as_view(), name='set_password'),
-    url(r'^password/reset/$', views.PasswordResetView.as_view(), name='password_reset'),
-    url(r'^password/reset/confirm/$', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    url(r'^$', views.RootView.as_view(urls_extra_mapping={'login': 'login', 'logout': 'logout'}), name='root'),
-    url(r'^login/$', views.LoginView.as_view(), name='login'),
-    url(r'^logout/$', views.LogoutView.as_view(), name='logout'),
+    url(r'^auth/', include('auth_djoser.urls'))
 ]
 

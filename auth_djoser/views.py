@@ -24,6 +24,8 @@ class RootView(views.APIView):
         'change-password': 'set_password',
         'password-reset': 'password_reset',
         'password-reset-confirm': 'password_reset_confirm',
+        'login':'login',
+        'logout':'logout'
     }
     urls_extra_mapping = None
 
