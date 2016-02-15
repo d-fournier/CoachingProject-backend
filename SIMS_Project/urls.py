@@ -23,12 +23,14 @@ from sport.views import SportViewSet
 from level.views import LevelViewSet
 from user.views import UserProfileViewSet
 from relation.views import RelationViewSet
+from message.views import MessageViewSet
 
 router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
 router.register(r'levels', LevelViewSet)
 router.register(r'users', UserProfileViewSet, base_name='users')
 router.register(r'relations', RelationViewSet)
+router.register(r'messages', MessageViewSet, base_name='messages')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
