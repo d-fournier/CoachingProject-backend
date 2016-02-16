@@ -24,7 +24,9 @@ class RelationViewSet(viewsets.ModelViewSet):
 		return RelationCreateSerializer
  
 	def get_queryset(self):		
-		if self.request.user.is_authenticated():
+		if self.request.user.is_superuser :
+			queryset = Relation.objects.all()
+		elif self.request.user.is_authenticated():
 			queryset = Relation.objects.filter(Q(coach__user=self.request.user)|Q(trainee__user=self.request.user))
 		else:
 			queryset=Relation.objects.none()

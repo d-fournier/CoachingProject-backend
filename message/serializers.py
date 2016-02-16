@@ -12,7 +12,6 @@ class MessageReadSerializer(serializers.ModelSerializer):
 		fields = ('__all__')
 
 class MessageCreateSerializer(serializers.ModelSerializer):
-
 	class Meta:
 		model = Message
 		fields = ('__all__')

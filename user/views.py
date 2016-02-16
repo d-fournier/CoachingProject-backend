@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from .serializers import UserProfileReadSerializer, UserProfileCreateSerializer
 from .models import UserProfile
-from rest_framework import viewsets, permissions
+from .permissions import UserProfilePermission
+from rest_framework import viewsets
 
 # Create your views here.
 class UserProfileViewSet(viewsets.ModelViewSet):
-	permission_classes= [permissions.IsAuthenticatedOrReadOnly]
+	permission_classes= [UserProfilePermission]
 
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
@@ -24,3 +25,4 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 		if sport is not None :
 			queryset = queryset.filter(levels__sport__id=sport)
 		return queryset
+
