@@ -1,12 +1,16 @@
 from django.shortcuts import render
-from .serializers import UserProfileSerializer
+from .serializers import UserProfileReadSerializer, UserProfileCreateSerializer
 from .models import UserProfile
 from rest_framework import viewsets, permissions
 
 # Create your views here.
 class UserProfileViewSet(viewsets.ModelViewSet):
-	serializer_class = UserProfileSerializer
 	permission_classes= [permissions.IsAuthenticatedOrReadOnly]
+
+	def get_serializer_class(self):
+		if self.action=='list' or self.action=='retrieve':
+			return UserProfileReadSerializer
+		return UserProfileCreateSerializer
 
 	def get_queryset(self):
 		queryset = UserProfile.objects.all()

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import MessageSerializer
+from .serializers import MessageReadSerializer, MessageCreateSerializer
 from .models import Message
 from rest_framework import viewsets, permissions
 from django.db.models import Q
@@ -8,8 +8,12 @@ from rest_framework import status
 
 # Create your views here.
 class MessageViewSet(viewsets.ModelViewSet):
-	serializer_class = MessageSerializer
 	permission_classes= [permissions.IsAuthenticatedOrReadOnly]
+
+	def get_serializer_class(self):
+		if self.action=='list' or self.action=='retrieve':
+			return MessageReadSerializer
+		return MessageCreateSerializer
 
 	def get_queryset(self):		
 		if self.request.user.is_authenticated():
