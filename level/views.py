@@ -6,7 +6,7 @@ from rest_framework import viewsets, permissions
 # Create your views here.
 class LevelViewSet(viewsets.ModelViewSet):
 	queryset = Level.objects.all()
-	permission_classes= [permissions.IsAuthenticatedOrReadOnly]
+	permission_classes= [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':

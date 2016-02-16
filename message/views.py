@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .serializers import MessageReadSerializer, MessageCreateSerializer
 from .models import Message
+from .permissions import MessagePermission
 from rest_framework import viewsets, permissions
 from django.db.models import Q
 from rest_framework.response import Response
@@ -8,15 +9,17 @@ from rest_framework import status
 
 # Create your views here.
 class MessageViewSet(viewsets.ModelViewSet):
-	permission_classes= [permissions.IsAuthenticatedOrReadOnly]
+	permission_classes= [MessagePermission]
 
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
 			return MessageReadSerializer
 		return MessageCreateSerializer
 
-	def get_queryset(self):		
-		if self.request.user.is_authenticated():
+	def get_queryset(self):	
+		if self.request.user.is_superuser:
+			queryset = Message.objects.all()	
+		elif self.request.user.is_authenticated():
 			queryset = Message.objects.filter(Q(to_relation__coach__user=self.request.user)|Q(to_relation__trainee__user=self.request.user))
 		else:
 			queryset=Message.objects.none()
