@@ -10,4 +10,4 @@ class RelationAccessPermission(BasePermission):
 
 	def has_object_permission(self, request, view, obj):
 		# Instance must have an attribute named `coach` and 'trainee'.
-		return (obj.trainee == request.user) | (obj.coach == request.user) | request.user.is_superuser
+		return (obj.trainee.user == request.user) | (obj.coach.user == request.user) | request.user.is_superuser
