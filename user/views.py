@@ -19,7 +19,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 		queryset = UserProfile.objects.all()
 		keywords = self.request.query_params.get('keywords', None)
 		if keywords is not None :
-			queryset = queryset.filter(displayName__iexact=keywords)|queryset.filter(description__contains=keywords)
+			queryset = queryset.filter(displayName__contains=keywords)|queryset.filter(description__contains=keywords)
 		coach = self.request.query_params.get('coach', None)
 		if coach is not None :
 			queryset = queryset.filter(isCoach=coach)
