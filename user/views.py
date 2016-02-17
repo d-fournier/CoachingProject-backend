@@ -2,7 +2,9 @@ from django.shortcuts import render
 from .serializers import UserProfileReadSerializer, UserProfileCreateSerializer
 from .models import UserProfile
 from .permissions import UserProfilePermission
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import list_route
 
 # Create your views here.
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -25,4 +27,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 		if sport is not None :
 			queryset = queryset.filter(levels__sport__id=sport)
 		return queryset
+
+	@list_route()
+	def me(self, request):
+		if request.user.is_authenticated():
+			queryset = UserProfile.objects.get(user=request.user)
+			serializer = UserProfileReadSerializer(queryset)
+			headers = self.get_success_headers(serializer.data)
+			return Response(serializer.data, status=status.HTTP_200_OK,headers=headers)
+		return Response('You are not connected', status=status.HTTP_403_FORBIDDEN)
 
