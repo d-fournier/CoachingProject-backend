@@ -2,13 +2,12 @@ from django.shortcuts import render
 from .serializers import RelationReadSerializer, RelationCreateSerializer
 from .models import Relation
 from .permissions import RelationAccessPermission
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from user.models import UserProfile
 from message.models import Message
 from django.db.models import Q
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
-from rest_framework import status
 from message.serializers import MessageReadSerializer
 
 
