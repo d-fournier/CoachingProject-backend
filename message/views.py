@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .serializers import MessageReadSerializer, MessageCreateSerializer
 from .models import Message
+from user.models import UserProfile
 from .permissions import MessagePermission
 from rest_framework import viewsets, permissions
 from django.db.models import Q
@@ -27,12 +28,12 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 	def create(self,request):
 		serializer = self.get_serializer(data=request.data)
-
 		if serializer.is_valid():
-
 			relation = serializer.validated_data.get('to_relation')
-			if relation.requestStatus == True & ((relation.coach.user==self.request.user) | (relation.trainee.user==self.request.user)):
+			if relation.requestStatus == True & ((relation.coach.user==request.user) | (relation.trainee.user==request.user)):
 				self.object = serializer.save()
+				up = UserProfile.objects.get(user=request.user)
+				self.object.from_user = up
 				self.object.save()
 				headers = self.get_success_headers(serializer.data)
 				return Response(serializer.data, status=status.HTTP_201_CREATED,
