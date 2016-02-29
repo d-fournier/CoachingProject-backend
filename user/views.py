@@ -19,13 +19,16 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 		queryset = UserProfile.objects.all()
 		keywords = self.request.query_params.get('keywords', None)
 		if keywords is not None :
-			queryset = queryset.filter(displayName__contains=keywords)|queryset.filter(description__contains=keywords)
+			queryset = queryset.filter(displayName__icontains=keywords)|queryset.filter(description__icontains=keywords)
 		coach = self.request.query_params.get('coach', None)
 		if coach is not None :
 			queryset = queryset.filter(isCoach=coach)
 		sport = self.request.query_params.get('sport', None)
 		if sport is not None :
 			queryset = queryset.filter(levels__sport__id=sport)
+		level = self.request.query_params.get('level', None)
+		if level is not None :
+			queryset = queryset.filter(levels__id=level)
 		return queryset
 
 	@list_route()
