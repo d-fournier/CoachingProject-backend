@@ -14,4 +14,4 @@ class MessageReadSerializer(serializers.ModelSerializer):
 class MessageCreateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
-		fields = ('to_relation','content')
+		fields = ('to_relation','content', 'is_pinned')

@@ -8,3 +8,4 @@ class Message(models.Model):
 	from_user = models.ForeignKey(UserProfile, on_delete=models.SET_DEFAULT, default=-1)
 	to_relation = models.ForeignKey(Relation, on_delete=models.CASCADE, null=False, blank=False)
 	time = models.DateTimeField(auto_now_add=True)
+	is_pinned=models.BooleanField()
