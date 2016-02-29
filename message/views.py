@@ -31,9 +31,8 @@ class MessageViewSet(viewsets.ModelViewSet):
 		if serializer.is_valid():
 			relation = serializer.validated_data.get('to_relation')
 			if relation.requestStatus == True & ((relation.coach.user==request.user) | (relation.trainee.user==request.user)):
-				self.object = serializer.save()
 				up = UserProfile.objects.get(user=request.user)
-				self.object.from_user = up
+				self.object = serializer.save(from_user=up)
 				self.object.save()
 				headers = self.get_success_headers(serializer.data)
 				return Response(serializer.data, status=status.HTTP_201_CREATED,
