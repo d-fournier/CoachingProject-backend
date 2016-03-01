@@ -4,7 +4,7 @@ from user.serializers import UserProfileReadSerializer
 from sport.serializers import SportSerializer
 
 class GroupReadSerializer(serializers.ModelSerializer):
-	users = UserProfileReadSerializer(many=True,read_only=True)
+	members = UserProfileReadSerializer(many=True,read_only=True)
 	sport = SportSerializer(read_only=True)
 	
 	class Meta:

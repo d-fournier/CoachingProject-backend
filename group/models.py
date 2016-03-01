@@ -6,7 +6,7 @@ from sport.models import Sport
 class Group(models.Model):
 	name = models.CharField(max_length=100)
 	description = models.TextField()
-	users = models.ManyToManyField(UserProfile, blank=False)
+	members = models.ManyToManyField(UserProfile, blank=False)
 	sport = models.ForeignKey(Sport, blank=False)
 	creation_date = models.DateField(auto_now_add=True,auto_now=False)
 
