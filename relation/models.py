@@ -8,8 +8,12 @@ class Relation(models.Model):
 	trainee = models.ForeignKey(UserProfile,related_name='%(class)s_trainee', blank=False)
 	requestStatus = models.NullBooleanField()
 	sport = models.ForeignKey(Sport, blank=False)
-	comment = models.CharField(max_length=200, blank=True)
+	comment = models.TextField(blank=True)
 	date =  models.DateField(auto_now=False, auto_now_add=True)
+	active = models.BooleanField(default=True)
+
+	class Meta:
+		unique_together=('coach','trainee','sport',)
 
 	def __str__(self):
-		return self.coach.user.username+' <-> '+self.trainee.user.username
+		return self.coach.displayName+' <-> '+self.trainee.displayName

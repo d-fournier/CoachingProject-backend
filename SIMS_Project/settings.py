@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'sport',
     'message',
     'relation',
+    'group'
 ]
 
 REST_FRAMEWORK = {

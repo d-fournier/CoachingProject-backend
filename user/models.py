@@ -13,4 +13,4 @@ class UserProfile(models.Model):
 	levels = models.ManyToManyField(Level, blank=True)
 
 	def __str__(self):
-		return self.user.username
+		return self.displayName

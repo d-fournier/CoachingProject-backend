@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
-#from auth_djoser import views
 
 
 from sport.views import SportViewSet
@@ -24,20 +23,20 @@ from level.views import LevelViewSet
 from user.views import UserProfileViewSet
 from relation.views import RelationViewSet
 from message.views import MessageViewSet
+from group.views import GroupViewSet
 
 router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
 router.register(r'levels', LevelViewSet)
 router.register(r'users', UserProfileViewSet, base_name='users')
 router.register(r'relations', RelationViewSet)
-# router.register(r'relations/(?P<relation_id>[0-9]+)/messages', messages_of_relation, base_name='messages_of_relation')
 router.register(r'messages', MessageViewSet, base_name='messages')
+router.register(r'groups',GroupViewSet,base_name='groups')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
    	url(r'^api-auth/', include('rest_framework.urls')),
    	url(r'^api/', include(router.urls)),
     url(r'^auth/', include('auth_djoser.urls')),
-    #url(r'relations/(?P<relation_id>[0-9]+)/messages', messages_of_relation)
 ]
 
