@@ -30,14 +30,29 @@ class MessageViewSet(viewsets.ModelViewSet):
 		serializer = self.get_serializer(data=request.data)
 		if serializer.is_valid():
 			relation = serializer.validated_data.get('to_relation')
-			if relation.requestStatus == True & ((relation.coach.user==request.user) | (relation.trainee.user==request.user)):
+			group = serializer.validated_data.get('to_group')
+			if relation is not None and group is not None :
+				return Response('You cannot have a relation and a group for the same message, one should be null', status=status.HTTP_400_BAD_REQUEST)
+			if relation is not None :
+				if relation.requestStatus == True & ((relation.coach.user==request.user) | (relation.trainee.user==request.user)):
+					up = UserProfile.objects.get(user=request.user)
+					self.object = serializer.save(from_user=up)
+					self.object.save()
+					headers = self.get_success_headers(serializer.data)
+					return Response(serializer.data, status=status.HTTP_201_CREATED,
+	                            headers=headers)
+				return Response('Either the relation is not confirmed or you are not involved in it', status=status.HTTP_400_BAD_REQUEST)
+			
+			if group is not None :
 				up = UserProfile.objects.get(user=request.user)
-				self.object = serializer.save(from_user=up)
-				self.object.save()
-				headers = self.get_success_headers(serializer.data)
-				return Response(serializer.data, status=status.HTTP_201_CREATED,
-                            headers=headers)
-			return Response('Either the relation is not confirmed or you are not involved in it', status=status.HTTP_400_BAD_REQUEST)
+				if up in group.members.all():	
+					self.object = serializer.save(from_user=up)
+					self.object.save()
+					headers = self.get_success_headers(serializer.data)
+					return Response(serializer.data, status=status.HTTP_201_CREATED,
+	                            headers=headers)
+				return Response('You are not a member of this group', status=status.HTTP_400_BAD_REQUEST)
+
 
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
