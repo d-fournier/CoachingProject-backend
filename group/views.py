@@ -41,6 +41,19 @@ class GroupViewSet(viewsets.ModelViewSet):
 		headers = self.get_success_headers(serializer.data)
 		return Response(serializer.data, status=status.HTTP_200_OK,headers=headers)
 
+	@detail_route(methods=['post'])
+	def add(self,request, pk=None):
+		group=Group.objects.get(pk=pk)
+		up = UserProfile.objects.get(user=request.user)
+		if up not in group.members.all():
+			return Response('You are not in this group, you cannot add people to it', status=status.HTTP_403_FORBIDDEN,headers=headers)
+		users = request.data['users']
+		for pk in users:
+			up = UserProfile.objects.get(pk=pk)
+			group.members.add(up)
+		serializer = GroupReadSerializer(group)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+
 	def create(self,request):
 		serializer = self.get_serializer(data=request.data)
 		if serializer.is_valid():
