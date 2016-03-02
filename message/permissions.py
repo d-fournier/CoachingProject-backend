@@ -13,7 +13,7 @@ class MessagePermission(permissions.BasePermission):
 			if request.user.is_superuser:
 				return True
 			elif request.user.is_authenticated():
-				if request.method=='POST':
+				if request.method=='POST' or request.method=='PATCH':
 					return True
 				else:
 					return False
