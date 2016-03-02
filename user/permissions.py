@@ -20,7 +20,10 @@ class UserProfilePermission(permissions.BasePermission):
 
 
 	def has_object_permission(self, request, view, obj):
-		if request.user.id == obj.user.id or request.user.is_superuser:
+		if request.method in permissions.SAFE_METHODS:
 			return True
 		else:
-			return False
+			if request.user.id == obj.user.id or request.user.is_superuser:
+				return True
+			else:
+				return False
