@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .serializers import GroupReadSerializer, GroupCreateSerializer
 from .models import Group
+from .permissions import GroupPermission
 from user.models import UserProfile
 from message.models import Message
 from message.serializers import MessageReadSerializer
@@ -11,7 +12,7 @@ from rest_framework.decorators import detail_route
 # Create your views here.
 class GroupViewSet(viewsets.ModelViewSet):
 	queryset = Group.objects.all()
-	permission_classes= [permissions.DjangoModelPermissionsOrAnonReadOnly]
+	permission_classes= [GroupPermission]
 
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
@@ -39,3 +40,17 @@ class GroupViewSet(viewsets.ModelViewSet):
 		serializer=MessageReadSerializer(queryset, many=True)
 		headers = self.get_success_headers(serializer.data)
 		return Response(serializer.data, status=status.HTTP_200_OK,headers=headers)
+
+	def create(self,request):
+		serializer = self.get_serializer(data=request.data)
+		if serializer.is_valid():
+			sport = serializer.validated_data.get('sport')
+			name = serializer.validated_data.get('name')
+			description = serializer.validated_data.get('description')
+			g = Group(sport=sport,name=name,description=description)
+			g.save()
+			up = UserProfile.objects.get(user=request.user)
+			g.members.add(up)
+			headers = self.get_success_headers(serializer.data)
+			return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -15,4 +15,4 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = Group
-		fields = ('__all__')
+		fields = ('name','description','sport')
