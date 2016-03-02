@@ -40,3 +40,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 			return Response(serializer.data, status=status.HTTP_200_OK,headers=headers)
 		return Response('You are not connected', status=status.HTTP_403_FORBIDDEN)
 
+
+	def perform_update(self, serializer):
+		oldUp = UserProfile.objects.get(user=serializer.validated_data.get('user'))
+		serializer.save()
+		oldUp.picture.delete()
+
+	def perform_destroy(self, instance):
+		instance.picture.delete()
+		instance.delete()
