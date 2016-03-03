@@ -57,6 +57,8 @@ class RelationViewSet(viewsets.ModelViewSet):
 
 	def perform_update(self,serializer):
 		data = serializer.validated_data
-		if [x for x in data.keys()] != ['requestStatus','active']:
+		authorized_set = set(['requestStatus','active'])
+		key_set = set([x for x in data.keys()])
+		if not key_set.issubset(authorized_set) :
 			raise ValidationError('You can only update status and active attributes of a Relation')
 		serializer.save()

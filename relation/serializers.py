@@ -16,4 +16,4 @@ class RelationCreateSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Relation
-		exclude = ('requestStatus','active','date','trainee')
+		fields = ('coach','sport','comment','requestStatus','active')

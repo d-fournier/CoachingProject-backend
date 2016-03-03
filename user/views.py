@@ -42,7 +42,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 
 	def perform_update(self, serializer):
-		oldUp = UserProfile.objects.get(user=serializer.validated_data.get('user'))
+		oldUp = UserProfile.objects.get(user=self.request.user)
 		serializer.save()
 		oldUp.picture.delete()
 
