@@ -150,19 +150,17 @@ STATICFILES_DIRS = (
 # Check if AmazonS3 is enable
 awsS3AccessKeyId = os.environ.get('AWS_S3_ACCESS_KEY_ID', '')
 awsS3SecretAccessKey = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
+awsS3BucketName = os.environ.get('AWS_S3_BUCKET_NAME', '')
 
 AWS_ACTIVATED = False
 
-if awsS3AccessKeyId and awsS3SecretAccessKey:
-    INSTALLED_APPS = INSTALLED_APPS + ['storages']
+if awsS3AccessKeyId and awsS3SecretAccessKey and awsS3BucketName:
     AWS_ACTIVATED = True
+    INSTALLED_APPS = INSTALLED_APPS + ['storages']
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-    S3_USE_SIGV4=True
-    AWS_S3_SECURE_URLS = False       # use http instead of https
-    AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
-    AWS_STORAGE_BUCKET_NAME = 'coachingapplication.media'
-    AWS_S3_ACCESS_KEY_ID = awsS3AccessKeyId    # enter your access key id
-    AWS_S3_SECRET_ACCESS_KEY = awsS3SecretAccessKey # enter your secret access key
+    AWS_STORAGE_BUCKET_NAME = awsS3BucketName
+    AWS_S3_ACCESS_KEY_ID = awsS3AccessKeyId
+    AWS_S3_SECRET_ACCESS_KEY = awsS3SecretAccessKey
 else:
     MEDIA_ROOT = 'media'
     MEDIA_URL ='/media/'
