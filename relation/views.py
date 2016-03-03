@@ -6,6 +6,7 @@ from rest_framework import viewsets, permissions, status
 from user.models import UserProfile
 from message.models import Message
 from django.db.models import Q
+from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from message.serializers import MessageReadSerializer
@@ -43,17 +44,19 @@ class RelationViewSet(viewsets.ModelViewSet):
 		headers = self.get_success_headers(serializer.data)
 		return Response(serializer.data, status=status.HTTP_200_OK,headers=headers)
 
-	def create(self,request):
-		serializer = self.get_serializer(data=request.data)
-		if serializer.is_valid():
-			data = serializer.validated_data
-			if ((data.get('trainee').user==self.request.user) | (data.get('coach').user==self.request.user)):
-				self.object = serializer.save()
-				self.object.save()
-				headers = self.get_success_headers(serializer.data)
-				return Response(serializer.data, status=status.HTTP_201_CREATED,
-                            headers=headers)
 
-			return Response('Cannot create a relation you are not involved in', status=status.HTTP_401_UNAUTHORIZED)
+	def perform_create(self,serializer):
+		data = serializer.validated_data
+		trainee = UserProfile.objects.get(user=self.request.user)
+		coach = data.get('coach')
+		if not coach.isCoach:
+			raise ValidationError('The person you asked for coaching is not a coach')
+		if coach.user==trainee.user:
+			raise ValidationError('Coach and trainee must be different')
+		serializer.save(trainee=trainee)
 
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	def perform_update(self,serializer):
+		data = serializer.validated_data
+		if [x for x in data.keys()] != ['requestStatus','active']:
+			raise ValidationError('You can only update status and active attributes of a Relation')
+		serializer.save()
