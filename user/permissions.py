@@ -10,11 +10,6 @@ class UserProfilePermission(permissions.BasePermission):
 		# Check permissions for write request
 			if request.user.is_superuser:
 				return True
-			elif request.user.is_authenticated():
-				if request.method=='PUT':
-					return True
-				else:
-					return False
 			else:
 				return False
 
