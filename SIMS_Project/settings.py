@@ -163,7 +163,6 @@ if awsS3AccessKeyId and awsS3SecretAccessKey:
     AWS_STORAGE_BUCKET_NAME = 'coachingapplication.media'
     AWS_S3_ACCESS_KEY_ID = awsS3AccessKeyId    # enter your access key id
     AWS_S3_SECRET_ACCESS_KEY = awsS3SecretAccessKey # enter your secret access key
-    MEDIA_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 else:
     MEDIA_ROOT = 'media'
     MEDIA_URL ='/media/'
