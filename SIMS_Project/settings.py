@@ -157,6 +157,7 @@ if awsS3AccessKeyId and awsS3SecretAccessKey:
     INSTALLED_APPS = INSTALLED_APPS + ['storages']
     AWS_ACTIVATED = True
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    S3_USE_SIGV4=True
     AWS_S3_SECURE_URLS = False       # use http instead of https
     AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
     AWS_STORAGE_BUCKET_NAME = 'coachingapplication'
