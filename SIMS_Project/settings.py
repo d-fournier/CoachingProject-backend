@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'auth_djoser',
-    'storages',
     'user',
     'level',
     'sport',
@@ -155,6 +154,7 @@ awsS3SecretAccessKey = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
 AWS_ACTIVATED = False
 
 if not awsS3AccessKeyId and not awsS3SecretAccessKey:
+    INSTALLED_APPS = INSTALLED_APPS + 'storages'
     AWS_ACTIVATED = True
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     AWS_S3_SECURE_URLS = False       # use http instead of https
@@ -162,7 +162,7 @@ if not awsS3AccessKeyId and not awsS3SecretAccessKey:
     AWS_STORAGE_BUCKET_NAME = 'coachingapplication'
     AWS_S3_ACCESS_KEY_ID = awsS3AccessKeyId    # enter your access key id
     AWS_S3_SECRET_ACCESS_KEY = awsS3SecretAccessKey # enter your secret access key
-elif
+else:
     MEDIA_ROOT = 'media'
     MEDIA_URL ='/media/'
 
