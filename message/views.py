@@ -46,8 +46,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 			if group is not None :
 				up = UserProfile.objects.get(user=request.user)
 				if up in group.members.all():	
-					self.object = serializer.save(from_user=up)
-					self.object.save()
+					serializer.save(from_user=up)
 					headers = self.get_success_headers(serializer.data)
 					return Response(serializer.data, status=status.HTTP_201_CREATED,
 								headers=headers)
