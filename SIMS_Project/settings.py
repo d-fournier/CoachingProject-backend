@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'auth_djoser',
+    'storages',
     'user',
     'level',
     'sport',
@@ -140,15 +141,27 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+# Serve static files with Heroku
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
  os.path.join(BASE_DIR, 'static'),
 )
 
-MEDIA_ROOT = 'media'
-MEDIA_URL ='/media/'
+# Check if AmazonS3 is enable
+awsS3AccessKeyId = os.environ.get('AWS_S3_ACCESS_KEY_ID', '')
+awsS3SecretAccessKey = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
+
+if ..==..:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    AWS_S3_SECURE_URLS = False       # use http instead of https
+    AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
+    AWS_STORAGE_BUCKET_NAME = 'coachingapplication'
+    AWS_S3_ACCESS_KEY_ID = awsS3AccessKeyId    # enter your access key id
+    AWS_S3_SECRET_ACCESS_KEY = awsS3SecretAccessKey # enter your secret access key
+elif
+    MEDIA_ROOT = 'media'
+    MEDIA_URL ='/media/'
 
 ### HEROKU config
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
