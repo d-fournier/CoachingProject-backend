@@ -16,4 +16,4 @@ class RelationCreateSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Relation
-		fields = ('__all__')
+		fields = ('coach','sport','comment','requestStatus','active')

@@ -54,16 +54,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 		serializer = GroupReadSerializer(group)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 
-	def create(self,request):
-		serializer = self.get_serializer(data=request.data)
-		if serializer.is_valid():
-			sport = serializer.validated_data.get('sport')
-			name = serializer.validated_data.get('name')
-			description = serializer.validated_data.get('description')
-			g = Group(sport=sport,name=name,description=description)
-			g.save()
-			up = UserProfile.objects.get(user=request.user)
-			g.members.add(up)
-			headers = self.get_success_headers(serializer.data)
-			return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	def perform_create(self,serializer):
+		up = UserProfile.objects.get(user=self.request.user)
+		group = serializer.save()
+		group.members.add(up)

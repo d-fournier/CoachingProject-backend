@@ -6,7 +6,7 @@ from sport.models import Sport
 class Relation(models.Model):
 	coach = models.ForeignKey(UserProfile,related_name='%(class)s_coach', blank=False)
 	trainee = models.ForeignKey(UserProfile,related_name='%(class)s_trainee', blank=False)
-	requestStatus = models.NullBooleanField()
+	requestStatus = models.NullBooleanField(default=None)
 	sport = models.ForeignKey(Sport, blank=False)
 	comment = models.TextField(blank=True)
 	date =  models.DateField(auto_now=False, auto_now_add=True)
