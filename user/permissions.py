@@ -9,6 +9,8 @@ class UserProfilePermission(permissions.BasePermission):
 		else:
 		# Check permissions for write request
 			if request.user.is_authenticated():
+				if request.method=='POST' :
+					return False
 				return True
 			else:
 				return False

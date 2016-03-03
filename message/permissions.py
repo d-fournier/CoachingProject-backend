@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from .models import Message
+from user.models import UserProfile
 from .serializers import MessageReadSerializer
 
 class MessagePermission(permissions.BasePermission):
@@ -13,7 +14,7 @@ class MessagePermission(permissions.BasePermission):
 			if request.user.is_superuser:
 				return True
 			elif request.user.is_authenticated():
-				if request.method=='POST':
+				if request.method=='POST' and request.method=='PATCH':
 					return True
 				else:
 					return False
