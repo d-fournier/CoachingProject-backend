@@ -152,7 +152,10 @@ STATICFILES_DIRS = (
 awsS3AccessKeyId = os.environ.get('AWS_S3_ACCESS_KEY_ID', '')
 awsS3SecretAccessKey = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
 
-if ..==..:
+AWS_ACTIVATED = False
+
+if not awsS3AccessKeyId and not awsS3SecretAccessKey:
+    AWS_ACTIVATED = True
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     AWS_S3_SECURE_URLS = False       # use http instead of https
     AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
