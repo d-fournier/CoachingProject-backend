@@ -153,8 +153,8 @@ awsS3SecretAccessKey = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
 
 AWS_ACTIVATED = False
 
-if not awsS3AccessKeyId and not awsS3SecretAccessKey:
-    INSTALLED_APPS = INSTALLED_APPS + 'storages'
+if awsS3AccessKeyId and awsS3SecretAccessKey:
+    INSTALLED_APPS = INSTALLED_APPS + ['storages']
     AWS_ACTIVATED = True
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     AWS_S3_SECURE_URLS = False       # use http instead of https

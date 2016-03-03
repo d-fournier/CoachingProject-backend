@@ -41,6 +41,6 @@ urlpatterns = [
    	url(r'^api/', include(router.urls)),
     url(r'^auth/', include('auth_djoser.urls')),
 ]
-if settings.AWS_ACTIVATED:
+if not settings.AWS_ACTIVATED:
     urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
