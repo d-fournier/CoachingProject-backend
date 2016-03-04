@@ -1,11 +1,13 @@
 from django.shortcuts import render
-from .serializers import RelationReadSerializer, RelationCreateSerializer
+from .serializers import RelationReadSerializer, RelationCreateSerializer, RelationUpdateSerializer
 from .models import Relation
 from .permissions import RelationAccessPermission
+from device import scripts
 from rest_framework import viewsets, permissions, status
 from user.models import UserProfile
 from message.models import Message
 from django.db.models import Q
+from django.db import IntegrityError
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -21,6 +23,8 @@ class RelationViewSet(viewsets.ModelViewSet):
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
 			return RelationReadSerializer
+		elif self.action=='update':
+			return RelationUpdateSerializer
 		return RelationCreateSerializer
  
 	def get_queryset(self):		
@@ -53,12 +57,21 @@ class RelationViewSet(viewsets.ModelViewSet):
 			raise ValidationError('The person you asked for coaching is not a coach')
 		if coach.user==trainee.user:
 			raise ValidationError('Coach and trainee must be different')
-		serializer.save(trainee=trainee)
+		try:
+			r = serializer.save(trainee=trainee)
+			scripts.sendGCMCoachingCreation(users=[trainee],relation=r)
+		except IntegrityError:
+			raise ValidationError('One relation has already been created between this coach and this trainee for the given sport')
 
 	def perform_update(self,serializer):
 		data = serializer.validated_data
+		up = UserProfile.objects.get(user=self.request.user)
 		authorized_set = set(['requestStatus','active'])
 		key_set = set([x for x in data.keys()])
 		if not key_set.issubset(authorized_set) :
 			raise ValidationError('You can only update status and active attributes of a Relation')
-		serializer.save()
+		r = serializer.save()
+		if r.relation.active:
+			scripts.sendGCMCoachingResponse(users=([r.trainee] if r.coach==up else [r.coach]),relation=r)
+		else:
+			scripts.sendGCMCoachingEnd(users=([r.trainee] if r.coach==up else [r.coach]),relation=r)

@@ -45,10 +45,10 @@ class MessageViewSet(viewsets.ModelViewSet):
 			if up not in group.members.all():
 				raise ValidationError('You cannot send a message because you are not a member of this group')
 			users.append(group.members.all())
-			users.remove(up)
-		serializer.save(from_user=up)
-		print(users)
-		scripts.sendGCMMessage(users=users,data={'title':'New message !','body':serializer.validated_data.get('content')})
+			users.remove(up)		
+		m = serializer.save(from_user=up)
+		scripts.sendGCMNewMessage(users=users,message=m)
+		
 
 	def perform_update(self,serializer):
 		data = serializer.validated_data
