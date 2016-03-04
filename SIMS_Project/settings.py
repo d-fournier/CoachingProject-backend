@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'SIMS_Project.wsgi.application'
 
  # Database
   # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-  
+
 DATABASE_TYPE = os.environ.get('DJANGO_DATABASE_TYPE', 'SQLITE3')
 if DATABASE_TYPE == 'SQLITE3':
     DATABASES = {
@@ -156,6 +156,7 @@ AWS_ACTIVATED = False
 
 if awsS3AccessKeyId and awsS3SecretAccessKey and awsS3BucketName:
     AWS_ACTIVATED = True
+    AWS_QUERYSTRING_AUTH = False
     INSTALLED_APPS = INSTALLED_APPS + ['storages']
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     AWS_STORAGE_BUCKET_NAME = awsS3BucketName
