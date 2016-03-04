@@ -26,6 +26,7 @@ from user.views import UserProfileViewSet
 from relation.views import RelationViewSet
 from message.views import MessageViewSet
 from group.views import GroupViewSet
+from device.views import DeviceViewSet
 
 router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
@@ -34,6 +35,7 @@ router.register(r'users', UserProfileViewSet, base_name='users')
 router.register(r'relations', RelationViewSet)
 router.register(r'messages', MessageViewSet, base_name='messages')
 router.register(r'groups',GroupViewSet,base_name='groups')
+router.register(r'devices',DeviceViewSet,base_name='devices')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -41,7 +43,4 @@ urlpatterns = [
    	url(r'^api/', include(router.urls)),
     url(r'^auth/', include('auth_djoser.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-if settings.GCM_ACTIVATED:
-    urlpatterns = urlpatterns + [url(r'', include('gcm.urls'))]
 

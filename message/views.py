@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .serializers import MessageReadSerializer, MessageCreateSerializer
 from .models import Message
 from user.models import UserProfile
+from device import scripts
 from .permissions import MessagePermission
 from rest_framework import viewsets, permissions
 from django.db.models import Q
@@ -30,6 +31,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 	def perform_create(self,serializer):
 		data = serializer.validated_data
 		up = UserProfile.objects.get(user=self.request.user)
+		users = []
 		relation, group = serializer.validated_data.get('to_relation'), serializer.validated_data.get('to_group')
 		if relation is not None and group is not None :
 			raise ValidationError('You cannot have a relation and a group for the same message, one should be null')
@@ -38,9 +40,15 @@ class MessageViewSet(viewsets.ModelViewSet):
 				raise ValidationError('You cannot send a message because the relation is not confirmed')
 			if relation.coach!=up and relation.trainee!=up:
 				raise ValidationError('You cannot send a message because you are not involved in this relation')
-		if group is not None and up not in group.members.all():
+			users.append(relation.trainee if relation.coach==up else relation.coach)
+		if group is not None :
+			if up not in group.members.all():
 				raise ValidationError('You cannot send a message because you are not a member of this group')
+			users.append(group.members.all())
+			users.remove(up)
 		serializer.save(from_user=up)
+		print(users)
+		scripts.sendGCMMessage(users=users,data={'title':'New message !','body':serializer.validated_data.get('content')})
 
 	def perform_update(self,serializer):
 		data = serializer.validated_data
