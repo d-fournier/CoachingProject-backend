@@ -158,8 +158,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ### GCM config for Cloud Messaging
 GCM_ACTIVATED = False
-# GCM_API_KEY = os.environ.get('GCM_API_KEY','')
-GCM_API_KEY = 'AIzaSyCn7SpQ30Sdcp_3aWXOnp0bJRL7mh9zWHs'
+GCM_API_KEY = os.environ.get('GCM_API_KEY','')
 
 if GCM_API_KEY:
     GCM_ACTIVATED = True
