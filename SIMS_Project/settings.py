@@ -153,3 +153,12 @@ MEDIA_URL ='/media/'
 ### HEROKU config
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+### GCM config for Cloud Messaging
+GCM_ACTIVATED = False
+
+GCM_API_KEY = os.environ.get('GCM_API_KEY','')
+
+if GCM_API_KEY:
+    GCM_ACTIVATED = True
+    INSTALLED_APPS = INSTALLED_APPS + ['gcm']
