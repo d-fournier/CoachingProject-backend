@@ -7,7 +7,7 @@ class DeviceReadSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = Device
-		fields = ('__all__')
+		fields = ('name','device_id','registration_token')
 
 class DeviceCreateSerializer(serializers.ModelSerializer):
 	
