@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'sport',
     'message',
     'relation',
-    'group'
+    'group',
+    'gcm',
+    'device'
 ]
 
 REST_FRAMEWORK = {
@@ -158,7 +160,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 GCM_ACTIVATED = False
 
 GCM_API_KEY = os.environ.get('GCM_API_KEY','')
+GCM_DEVICE_MODEL = 'device.models.Device'
 
 if GCM_API_KEY:
     GCM_ACTIVATED = True
-    INSTALLED_APPS = INSTALLED_APPS + ['gcm']
+    
