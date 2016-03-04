@@ -42,3 +42,6 @@ urlpatterns = [
     url(r'^auth/', include('auth_djoser.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.GCM_ACTIVATED:
+    urlpatterns = urlpatterns + [url(r'', include('gcm.urls'))]
+

@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'sport',
     'message',
     'relation',
-    'group'
+    'group',
+    'gcm',
+    'device'
 ]
 
 REST_FRAMEWORK = {
@@ -153,3 +155,13 @@ MEDIA_URL ='/media/'
 ### HEROKU config
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+### GCM config for Cloud Messaging
+GCM_ACTIVATED = False
+
+GCM_API_KEY = os.environ.get('GCM_API_KEY','')
+GCM_DEVICE_MODEL = 'device.models.Device'
+
+if GCM_API_KEY:
+    GCM_ACTIVATED = True
+    
