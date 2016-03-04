@@ -94,7 +94,7 @@ WSGI_APPLICATION = 'SIMS_Project.wsgi.application'
 
  # Database
   # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-  
+
 DATABASE_TYPE = os.environ.get('DJANGO_DATABASE_TYPE', 'SQLITE3')
 if DATABASE_TYPE == 'SQLITE3':
     DATABASES = {
@@ -142,19 +142,52 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+# Serve static files with Heroku
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
  os.path.join(BASE_DIR, 'static'),
 )
 
-MEDIA_ROOT = 'media'
-MEDIA_URL ='/media/'
+# Check if AmazonS3 is enable
+awsS3AccessKeyId = os.environ.get('AWS_S3_ACCESS_KEY_ID', '')
+awsS3SecretAccessKey = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
+awsS3BucketName = os.environ.get('AWS_S3_BUCKET_NAME', '')
+
+AWS_ACTIVATED = False
+
+if awsS3AccessKeyId and awsS3SecretAccessKey and awsS3BucketName:
+    AWS_ACTIVATED = True
+    AWS_QUERYSTRING_AUTH = False
+    INSTALLED_APPS = INSTALLED_APPS + ['storages']
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    AWS_STORAGE_BUCKET_NAME = awsS3BucketName
+    AWS_S3_ACCESS_KEY_ID = awsS3AccessKeyId
+    AWS_S3_SECRET_ACCESS_KEY = awsS3SecretAccessKey
+else:
+    MEDIA_ROOT = 'media'
+    MEDIA_URL ='/media/'
 
 ### HEROKU config
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Add Log to Heroku
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+        }
+    }
+}
+
 
 ### GCM config for Cloud Messaging
 GCM_ACTIVATED = False
@@ -162,4 +195,3 @@ GCM_API_KEY = os.environ.get('GCM_API_KEY','')
 
 if GCM_API_KEY:
     GCM_ACTIVATED = True
-    
