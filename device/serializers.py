@@ -3,7 +3,6 @@ from .models import Device
 from user.serializers import UserProfileReadSerializer
 
 class DeviceReadSerializer(serializers.ModelSerializer):
-	user = UserProfileReadSerializer(read_only=True)
 	
 	class Meta:
 		model = Device
