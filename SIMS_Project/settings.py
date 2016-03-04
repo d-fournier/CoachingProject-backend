@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'message',
     'relation',
     'group',
-    'gcm',
-    'device'
+    'device',
+    'requests'
 ]
 
 REST_FRAMEWORK = {
@@ -191,9 +191,7 @@ LOGGING = {
 
 ### GCM config for Cloud Messaging
 GCM_ACTIVATED = False
-
 GCM_API_KEY = os.environ.get('GCM_API_KEY','')
-GCM_DEVICE_MODEL = 'device.models.Device'
 
 if GCM_API_KEY:
     GCM_ACTIVATED = True

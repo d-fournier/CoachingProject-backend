@@ -8,6 +8,8 @@ class UserProfilePermission(permissions.BasePermission):
 			return True
 		else:
 		# Check permissions for write request
+			if request.user.is_superuser:
+				return True
 			if request.user.is_authenticated():
 				if request.method=='POST' :
 					return False
