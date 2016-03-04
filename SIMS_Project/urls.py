@@ -44,3 +44,6 @@ urlpatterns = [
 if not settings.AWS_ACTIVATED:
     urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.GCM_ACTIVATED:
+    urlpatterns = urlpatterns + [url(r'', include('gcm.urls'))]
+
