@@ -15,3 +15,5 @@ def sendGCMMessage(users,data):
 	headers = {'Authorization':'key='+settings.GCM_API_KEY, 'Content-type':'application/json'}
 	payload = json.dumps({'registration_ids':tokens,'data':{'title':data['title'],'body':data['body']}})
 	r = requests.post(GCM_SEND_URL, data = payload, headers=headers)
+	print(r.status_code)
+	print(r.text)
