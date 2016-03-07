@@ -22,8 +22,13 @@ class GroupPermission(permissions.BasePermission):
 				return False
 
 	def has_object_permission(self, request, view, obj):
-		if request.user.is_authenticated():
-			up = UserProfile.objects.get(user=request.user)
-			return request.user.is_superuser or (up in obj.members.all())
-		else:
+		if obj.private :
 			return False
+		else:
+			if request.method in permissions.SAFE_METHODS:
+				return True
+			else:
+				if request.user.is_superuser:
+					return True
+				else:
+					return False

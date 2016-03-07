@@ -8,6 +8,7 @@ class Group(models.Model):
 	description = models.TextField()
 	sport = models.ForeignKey(Sport, blank=False)
 	creation_date = models.DateField(auto_now_add=True,auto_now=False)
+	private = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.name

@@ -14,4 +14,4 @@ class GroupReadSerializer(serializers.ModelSerializer):
 class GroupCreateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Group
-		fields = ('name','description','sport')
+		fields = ('name','description','sport','private')
