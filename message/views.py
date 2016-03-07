@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import MessageReadSerializer, MessageCreateSerializer
+from .serializers import MessageReadSerializer, MessageCreateSerializer, MessageUpdateSerializer
 from .models import Message
 from user.models import UserProfile
 from device import scripts
@@ -17,7 +17,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
 			return MessageReadSerializer
-		elif self.action=='update':
+		elif self.action=='partial_update':
 			return MessageUpdateSerializer
 		return MessageCreateSerializer
 

@@ -40,6 +40,7 @@ def sendGCMCoachingEnd(users,relation):
 
 def sendToGCM(users,data):
 	tokens = []
+	print(users)
 	for up in users :
 		devices = Device.objects.filter(user=up)
 		for d in devices :

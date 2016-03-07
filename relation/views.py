@@ -23,7 +23,7 @@ class RelationViewSet(viewsets.ModelViewSet):
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
 			return RelationReadSerializer
-		elif self.action=='update':
+		elif self.action=='partial_update':
 			return RelationUpdateSerializer
 		return RelationCreateSerializer
  
@@ -59,12 +59,14 @@ class RelationViewSet(viewsets.ModelViewSet):
 			raise ValidationError('Coach and trainee must be different')
 		try:
 			r = serializer.save(trainee=trainee)
-			scripts.sendGCMCoachingCreation(users=[trainee],relation=r)
+			scripts.sendGCMCoachingCreation(users=[coach],relation=r)#We use the coach because it's the trainee who ask for coaching
 		except IntegrityError:
 			raise ValidationError('One relation has already been created between this coach and this trainee for the given sport')
 
 	def perform_update(self,serializer):
 		relation = serializer.instance
+		previous_requestStatus = relation.requestStatus
+		previous_active = relation.active
 		data = serializer.validated_data
 		up = UserProfile.objects.get(user=self.request.user)
 		authorized_set = set(['requestStatus','active'])
@@ -74,7 +76,7 @@ class RelationViewSet(viewsets.ModelViewSet):
 		if not key_set.issubset(authorized_set) :
 			raise ValidationError('You can only update status and active attributes of a Relation')
 		r = serializer.save()
-		if r.active:
+		if previous_requestStatus==None and r.requestStatus!=None:
 			scripts.sendGCMCoachingResponse(users=([r.trainee] if r.coach==up else [r.coach]),relation=r)
-		else:
+		elif previous_active==True and r.active==False :
 			scripts.sendGCMCoachingEnd(users=([r.trainee] if r.coach==up else [r.coach]),relation=r)
