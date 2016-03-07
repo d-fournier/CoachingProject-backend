@@ -13,7 +13,6 @@ from rest_framework.decorators import detail_route
 
 # Create your views here.
 class GroupViewSet(viewsets.ModelViewSet):
-	queryset = Group.objects.all()
 	permission_classes= [GroupPermission]
 
 	def get_serializer_class(self):
@@ -26,7 +25,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['get'])
 	def messages(self,request, pk=None):
-		if request.user.is_authenticated:
+		if request.user.is_authenticated():
 			up=UserProfile.objects.get(user=request.user)
 			group=Group.objects.get(pk=pk)
 			if is_user_in_group(up,group):
@@ -41,33 +40,34 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['post'])
 	def add(self,request, pk=None):
-		if request.user.is_authenticated :
+		if request.user.is_authenticated() :
 			up=UserProfile.objects.get(user=request.user)
 			group=Group.objects.get(pk=pk)
 			if is_user_admin_in_group(up,group):
-				pending_user_id = request.data['user']
-				try:
-					pending_user = UserProfile.objects.get(pk=pk_user)
-					pending_user_group_status = GroupStatus.get(group=group,user=pending_user)
-				except ObjectDoesNotExist:
-					return Response('User given is not registered or not in the group', status=status.HTTP_400_BAD_REQUEST)
-				if request.data['accepted']:#Demande d'ajout acceptée
-					if pending_user_group_status.status==GroupStatus.PENDING:
-						pending_user_group_status.status=GroupStatus.MEMBER
-						pending_user_group_status.save()
-						return Response('User added to the group with success', status=status.HTTP_200_OK)
-					else:
-						return Response('User given is already in the group', status=status.HTTP_400_BAD_REQUEST)
-				else:#Demande d'ajout refusée
-					pending_user_group_status.delete()
-					return Response('Demand from user refused', status=status.HTTP_200_OK)
+				pending_users_id = request.data['users']
+				for pk_user in pending_users_id:
+					try:
+						pending_user = UserProfile.objects.get(pk=pk_user)
+						pending_user_group_status = GroupStatus.get(group=group,user=pending_user)
+					except ObjectDoesNotExist:
+						return Response('User given is not registered or not in the group', status=status.HTTP_400_BAD_REQUEST)
+					if request.data['accepted']:#Demande d'ajout acceptée
+						if pending_user_group_status.status==GroupStatus.PENDING:
+							pending_user_group_status.status=GroupStatus.MEMBER
+							pending_user_group_status.save()
+							return Response('User added to the group with success', status=status.HTTP_200_OK)
+						else:
+							return Response('User given is already in the group', status=status.HTTP_400_BAD_REQUEST)
+					else:#Demande d'ajout refusée
+						pending_user_group_status.delete()
+						return Response('Demand from user refused', status=status.HTTP_200_OK)
 			else:
 				return Response('You are not admin of this group', status=status.HTTP_403_FORBIDDEN)		
 		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
 	@detail_route(methods=['post'])
 	def join(self,request, pk=None):
-		if request.user.is_authenticated :
+		if request.user.is_authenticated() :
 			group=Group.objects.get(pk=pk)
 			if group.private:
 				return Response('This group is private', status=status.HTTP_403_FORBIDDEN)
@@ -81,7 +81,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['get'])
 	def pending_members(self,request, pk=None):
-		if request.user.is_authenticated :
+		if request.user.is_authenticated() :
 			group=Group.objects.get(pk=pk)
 			up = UserProfile.objects.get(user=request.user)
 			if is_user_admin_in_group(up,group):
@@ -99,7 +99,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['get'])
 	def members(self,request, pk=None):
-		if request.user.is_authenticated :
+		if request.user.is_authenticated() :
 			group=Group.objects.get(pk=pk)
 			if group.private:
 				return Response('This group is private', status=status.HTTP_403_FORBIDDEN)
