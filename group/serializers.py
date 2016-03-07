@@ -12,7 +12,6 @@ class GroupReadSerializer(serializers.ModelSerializer):
 		fields = ('__all__')
 
 class GroupCreateSerializer(serializers.ModelSerializer):
-	
 	class Meta:
 		model = Group
 		fields = ('name','description','sport')

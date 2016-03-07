@@ -22,4 +22,4 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 class MessageUpdateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
-		fields = ('is_pinned')
+		fields = ('is_pinned',)
