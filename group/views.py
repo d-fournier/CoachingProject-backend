@@ -48,7 +48,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 				for pk_user in pending_users_id:
 					try:
 						pending_user = UserProfile.objects.get(pk=pk_user)
-						pending_user_group_status = GroupStatus.get(group=group,user=pending_user)
+						pending_user_group_status = GroupStatus.objects.get(group=group,user=pending_user)
 					except ObjectDoesNotExist:
 						return Response('User given is not registered or not in the group', status=status.HTTP_400_BAD_REQUEST)
 					if request.data['accepted']:#Demande d'ajout acceptée
