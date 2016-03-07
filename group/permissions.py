@@ -1,6 +1,7 @@
 from rest_framework import permissions
 from .models import Group
 from .serializers import GroupReadSerializer
+from user.models import UserProfile
 
 class GroupPermission(permissions.BasePermission):
 	
@@ -19,3 +20,15 @@ class GroupPermission(permissions.BasePermission):
 					return False
 			else:
 				return False
+
+	def has_object_permission(self, request, view, obj):
+		if obj.private :
+			return False
+		else:
+			if request.method in permissions.SAFE_METHODS:
+				return True
+			else:
+				if request.user.is_superuser:
+					return True
+				else:
+					return False
