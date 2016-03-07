@@ -17,6 +17,8 @@ class MessageViewSet(viewsets.ModelViewSet):
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
 			return MessageReadSerializer
+		elif self.action=='update':
+			return MessageUpdateSerializer
 		return MessageCreateSerializer
 
 	def get_queryset(self):	
@@ -52,8 +54,6 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 	def perform_update(self,serializer):
 		data = serializer.validated_data
-		if [x for x in data.keys()] != ['is_pinned']:
-			raise ValidationError('You can only update the pinned state of the message')
 		up = UserProfile.objects.get(user=self.request.user)
 		message = serializer.instance
 		relation, group = message.to_relation, message.to_group

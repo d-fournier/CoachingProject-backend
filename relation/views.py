@@ -64,14 +64,17 @@ class RelationViewSet(viewsets.ModelViewSet):
 			raise ValidationError('One relation has already been created between this coach and this trainee for the given sport')
 
 	def perform_update(self,serializer):
+		relation = serializer.instance
 		data = serializer.validated_data
 		up = UserProfile.objects.get(user=self.request.user)
 		authorized_set = set(['requestStatus','active'])
 		key_set = set([x for x in data.keys()])
+		if relation.requestStatus!=None and 'requestStatus' in key_set:
+			raise ValidationError('You cannot update the requestStatus of this relation because it has already been set')
 		if not key_set.issubset(authorized_set) :
 			raise ValidationError('You can only update status and active attributes of a Relation')
 		r = serializer.save()
-		if r.relation.active:
+		if r.active:
 			scripts.sendGCMCoachingResponse(users=([r.trainee] if r.coach==up else [r.coach]),relation=r)
 		else:
 			scripts.sendGCMCoachingEnd(users=([r.trainee] if r.coach==up else [r.coach]),relation=r)
