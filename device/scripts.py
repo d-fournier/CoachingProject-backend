@@ -55,6 +55,8 @@ def sendToGCM(users,data):
 	for res in response['results']:
 		if 'error' in res:
 			token = tokens[index]
-			Device.objects.get(registration_token=token).delete()
+			devices_to_delete = Device.objects.filter(registration_token=token)
+			for d in devices_to_delete:
+				d.delete()
 		index += 1
 			
