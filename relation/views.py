@@ -39,7 +39,10 @@ class RelationViewSet(viewsets.ModelViewSet):
 	@detail_route(methods=['get'])
 	def messages(self,request, pk=None):
 		queryset=Message.objects.none()
-		relation=Relation.objects.get(pk=pk)
+		try:
+			relation=Relation.objects.get(pk=pk)
+		except:
+			return Response('Relation not found', status=status.HTTP_404_NOT_FOUND)
 		if request.user.is_authenticated():
 			profile=UserProfile.objects.get(user=request.user)
 			if (relation.coach == profile) | (relation.trainee == profile):
