@@ -6,7 +6,7 @@ class DeviceReadSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = Device
-		fields = ('name','device_id','registration_token')
+		fields = ('id','name','device_id','registration_token')
 
 class DeviceCreateSerializer(serializers.ModelSerializer):
 	

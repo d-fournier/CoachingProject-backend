@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import MessageReadSerializer, MessageCreateSerializer
+from .serializers import MessageReadSerializer, MessageCreateSerializer, MessageUpdateSerializer
 from .models import Message
 from user.models import UserProfile
 from device import scripts
@@ -17,6 +17,8 @@ class MessageViewSet(viewsets.ModelViewSet):
 	def get_serializer_class(self):
 		if self.action=='list' or self.action=='retrieve':
 			return MessageReadSerializer
+		elif self.action=='partial_update':
+			return MessageUpdateSerializer
 		return MessageCreateSerializer
 
 	def get_queryset(self):	
@@ -45,15 +47,13 @@ class MessageViewSet(viewsets.ModelViewSet):
 			if up not in group.members.all():
 				raise ValidationError('You cannot send a message because you are not a member of this group')
 			users.append(group.members.all())
-			users.remove(up)
-		serializer.save(from_user=up)
-		print(users)
-		scripts.sendGCMMessage(users=users,data={'title':'New message !','body':serializer.validated_data.get('content')})
+			users.remove(up)		
+		m = serializer.save(from_user=up)
+		scripts.sendGCMNewMessage(users=users,message=m)
+		
 
 	def perform_update(self,serializer):
 		data = serializer.validated_data
-		if [x for x in data.keys()] != ['is_pinned']:
-			raise ValidationError('You can only update the pinned state of the message')
 		up = UserProfile.objects.get(user=self.request.user)
 		message = serializer.instance
 		relation, group = message.to_relation, message.to_group

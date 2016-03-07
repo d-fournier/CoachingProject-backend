@@ -191,7 +191,8 @@ LOGGING = {
 
 ### GCM config for Cloud Messaging
 GCM_ACTIVATED = False
-GCM_API_KEY = os.environ.get('GCM_API_KEY','')
+# GCM_API_KEY = os.environ.get('GCM_API_KEY','')
+GCM_API_KEY = 'AIzaSyBjRzHw3ineF7H5xX38kezDVdtfSW4_5ms'
 
 if GCM_API_KEY:
     GCM_ACTIVATED = True
