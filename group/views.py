@@ -9,7 +9,7 @@ from message.models import Message
 from message.serializers import MessageReadSerializer
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 
 # Create your views here.
 class GroupViewSet(viewsets.ModelViewSet):
@@ -68,10 +68,10 @@ class GroupViewSet(viewsets.ModelViewSet):
 			group=Group.objects.get(pk=pk)
 			up = UserProfile.objects.get(user=request.user)
 			try:
-					invited_user_group_status = GroupStatus.objects.get(group=group,user=up,status=GroupStatus.INVITED)
+				invited_user_group_status = GroupStatus.objects.get(group=group,user=up,status=GroupStatus.INVITED)
 			except ObjectDoesNotExist:
 				return Response('You have not been invited in this group', status=status.HTTP_400_BAD_REQUEST)
-			if request.data['accepted']==True
+			if request.data['accepted']==True:
 				invited_user_group_status.status = GroupStatus.MEMBER
 				invited_user_group_status.save()
 				return Response('Invitation successfully accepted', status=status.HTTP_200_OK)
@@ -138,7 +138,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 						invited_user_group_status = GroupStatus.objects.get(group=group,user=invited_user)
 						return Response('User given is already in the group or asked to join it', status=status.HTTP_400_BAD_REQUEST)
 					except ObjectDoesNotExist:
-						invited_user_group_status = GroupStatus(group=group,user=user,status=GroupStatus.INVITED)
+						invited_user_group_status = GroupStatus(group=group,user=invited_user,status=GroupStatus.INVITED)
 						invited_user_group_status.save()
 						return Response('User invited to the group with success', status=status.HTTP_200_OK)
 			else:

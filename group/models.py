@@ -25,7 +25,7 @@ class GroupStatus(models.Model):
 	user_status = (
         (ADMIN, 'Admin'),
         (MEMBER, 'Member'),
-        (PENDING, 'Pending')
+        (PENDING, 'Pending'),
         (INVITED,'Invited')
     )
 	status= models.CharField(max_length=3,choices=user_status, blank=False, null=False)
