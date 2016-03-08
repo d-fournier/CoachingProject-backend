@@ -25,7 +25,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		if self.action=='list':
 			queryset = Group.objects.filter(private=False)
-		elif self.action=='retrieve':
+		else:
 			queryset = Group.objects.filter()
 		keywords = self.request.query_params.get('keywords', None)
 		if keywords is not None :
