@@ -22,8 +22,17 @@ class GroupViewSet(viewsets.ModelViewSet):
 		return GroupCreateSerializer
 
 	def get_queryset(self):
+		queryset = Group.objects.none()
 		if self.action=='list':
-			queryset = Group.objects.filter(private=False)
+			if self.request.user.is_authenticated():
+				queryset = Group.objects.all()
+				up = UserProfile.objects.get(user=self.request.user)
+				groupStatus = GroupStatus.objects.exclude(Q(user=up,status=GroupStatus.MEMBER)|Q(user=up,status=GroupStatus.ADMIN))#Groupe où on est pas
+				for gs in groupStatus :#Je retire les grousp où on est pas
+					if gs.group.private:#et qui sont privés
+						queryset = queryset.exclude(id=gs.group.id)
+			else:
+				queryset = Group.objects.filter(private=False)
 		else:
 			queryset = Group.objects.filter()
 		keywords = self.request.query_params.get('keywords', None)
@@ -44,7 +53,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 			groupStatus = GroupStatus.objects.filter(Q(user=up,status=GroupStatus.MEMBER)|Q(user=up,status=GroupStatus.ADMIN))
 			groups = []
 			for gs in groupStatus :
-				groups.append(Group.objects.get(pk=gs.group_id))
+				groups.append(Group.objects.get(pk=gs.group.id))
 			serializer=GroupReadSerializer(groups, many=True)
 			return Response(serializer.data, status=status.HTTP_200_OK)
 		else:
