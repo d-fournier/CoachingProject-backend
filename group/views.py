@@ -2,7 +2,9 @@ from django.shortcuts import render
 from .serializers import GroupReadSerializer, GroupCreateSerializer
 from .models import Group, GroupStatus
 from .permissions import GroupPermission
+from .functions import *
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from user.models import UserProfile
 from user.serializers import UserProfileReadSerializer
 from message.models import Message
@@ -20,8 +22,11 @@ class GroupViewSet(viewsets.ModelViewSet):
 			return GroupReadSerializer
 		return GroupCreateSerializer
 
-	def get_queryset(self):	
-		return Group.objects.filter(private=False)
+	def get_queryset(self):
+		if self.action=='list':
+			queryset = Group.objects.filter(private=False)
+		else:
+			queryset = Group.objects.filter()
 		keywords = self.request.query_params.get('keywords', None)
 		if keywords is not None :
 			queryset = queryset.filter(name__icontains=keywords)|queryset.filter(description__icontains=keywords)
@@ -29,9 +34,22 @@ class GroupViewSet(viewsets.ModelViewSet):
 		if sport is not None :
 			queryset = queryset.filter(sport__id=sport)
 		city = self.request.query_params.get('city', None)
-		if level is not None :
-			queryset = queryset.filter(city__id=level)
+		if city is not None :
+			queryset = queryset.filter(city=city)
 		return queryset
+
+	@list_route()
+	def my_groups(self,request):
+		if request.user.is_authenticated() :
+			up = UserProfile.objects.get(user=request.user)
+			groupStatus = GroupStatus.objects.filter(Q(user=up,status=GroupStatus.MEMBER)|Q(user=up,status=GroupStatus.ADMIN))
+			groups = []
+			for gs in groupStatus :
+				groups.append(Group.objects.get(pk=gs.group_id))
+			serializer=GroupReadSerializer(groups, many=True)
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		else:
+			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
 	@detail_route(methods=['get'])
 	def messages(self,request, pk=None):
@@ -53,14 +71,15 @@ class GroupViewSet(viewsets.ModelViewSet):
 	def my_invitations(self,request):
 		if request.user.is_authenticated():
 			up=UserProfile.objects.get(user=request.user)
-			queryset = GroupStatus.objects.filter(user=user,status=GroupStatus.INVITED)
+			queryset = GroupStatus.objects.filter(user=up,status=GroupStatus.INVITED)
 			groups = []
 			for q in queryset:
 				groups.append(q.group)
+			serializer=GroupReadSerializer(groups, many=True)
+			return Response(serializer.data, status=status.HTTP_200_OK)
 		else:
 			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
-		serializer=GroupReadSerializer(groups, many=True)
-		return Response(serializer.data, status=status.HTTP_200_OK)
+		
 
 	@detail_route(methods=['post'])
 	def accept_invite(self,request, pk=None):
@@ -184,22 +203,3 @@ class GroupViewSet(viewsets.ModelViewSet):
 		group = serializer.save()
 		status = GroupStatus(group=group,user=up,status=GroupStatus.ADMIN)
 		status.save()
-
-
-def is_user_in_group(user,group):
-	try:
-		group_status = GroupStatus.objects.get(group=group,user=user)
-		if group_status.status!=GroupStatus.PENDING:
-			return True
-		return False
-	except ObjectDoesNotExist :
-		return False	
-
-def is_user_admin_in_group(user,group):
-	try:
-		group_status = GroupStatus.objects.get(group=group,user=user)
-		if group_status.status==GroupStatus.ADMIN:
-			return True
-		return False
-	except ObjectDoesNotExist :
-		return False
