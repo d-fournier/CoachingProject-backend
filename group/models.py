@@ -10,6 +10,7 @@ class Group(models.Model):
 	city = models.CharField(max_length=60)
 	creation_date = models.DateField(auto_now_add=True,auto_now=False)
 	private = models.BooleanField(default=False)
+	members = models.IntegerField(default=1)
 
 	def __str__(self):
 		return self.name

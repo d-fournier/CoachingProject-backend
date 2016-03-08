@@ -93,6 +93,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 			if request.data['accepted']==True:
 				invited_user_group_status.status = GroupStatus.MEMBER
 				invited_user_group_status.save()
+				group.members+=1
 				return Response('Invitation successfully accepted', status=status.HTTP_200_OK)
 			else:
 				invited_user_group_status.delete()
@@ -117,6 +118,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 						if pending_user_group_status.status==GroupStatus.PENDING:
 							pending_user_group_status.status=GroupStatus.MEMBER
 							pending_user_group_status.save()
+							group.members+=pending_users_id.size()
 							return Response('User added to the group with success', status=status.HTTP_200_OK)
 						else:
 							return Response('User given is already in the group', status=status.HTTP_400_BAD_REQUEST)
