@@ -9,7 +9,7 @@ from message.models import Message
 from message.serializers import MessageReadSerializer
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 
 # Create your views here.
 class GroupViewSet(viewsets.ModelViewSet):
@@ -21,7 +21,17 @@ class GroupViewSet(viewsets.ModelViewSet):
 		return GroupCreateSerializer
 
 	def get_queryset(self):	
-		return Group.objects.filter(private=False)	
+		return Group.objects.filter(private=False)
+		keywords = self.request.query_params.get('keywords', None)
+		if keywords is not None :
+			queryset = queryset.filter(name__icontains=keywords)|queryset.filter(description__icontains=keywords)
+		sport = self.request.query_params.get('sport', None)
+		if sport is not None :
+			queryset = queryset.filter(sport__id=sport)
+		city = self.request.query_params.get('city', None)
+		if level is not None :
+			queryset = queryset.filter(city__id=level)
+		return queryset
 
 	@detail_route(methods=['get'])
 	def messages(self,request, pk=None):
@@ -34,12 +44,45 @@ class GroupViewSet(viewsets.ModelViewSet):
 				return Response('You are not a member of the group', status=status.HTTP_403_FORBIDDEN)
 
 		else:
-			return Response('You are not connected', status=status.HTTP_403_FORBIDDEN)
+			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 		serializer=MessageReadSerializer(queryset, many=True)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+	@list_route()
+	def my_invitations(self,request):
+		if request.user.is_authenticated():
+			up=UserProfile.objects.get(user=request.user)
+			queryset = GroupStatus.objects.filter(user=user,status=GroupStatus.INVITED)
+			groups = []
+			for q in queryset:
+				groups.append(q.group)
+		else:
+			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+		serializer=GroupReadSerializer(groups, many=True)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+
 	@detail_route(methods=['post'])
-	def add(self,request, pk=None):
+	def accept_invite(self,request, pk=None):
+		if request.user.is_authenticated() :
+			group=Group.objects.get(pk=pk)
+			up = UserProfile.objects.get(user=request.user)
+			try:
+				invited_user_group_status = GroupStatus.objects.get(group=group,user=up,status=GroupStatus.INVITED)
+			except ObjectDoesNotExist:
+				return Response('You have not been invited in this group', status=status.HTTP_400_BAD_REQUEST)
+			if request.data['accepted']==True:
+				invited_user_group_status.status = GroupStatus.MEMBER
+				invited_user_group_status.save()
+				return Response('Invitation successfully accepted', status=status.HTTP_200_OK)
+			else:
+				invited_user_group_status.delete()
+				return Response('Invitation successfully refused', status=status.HTTP_200_OK)		
+		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+
+
+	@detail_route(methods=['post'])
+	def accept_join(self,request, pk=None):
 		if request.user.is_authenticated() :
 			up=UserProfile.objects.get(user=request.user)
 			group=Group.objects.get(pk=pk)
@@ -51,7 +94,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 						pending_user_group_status = GroupStatus.objects.get(group=group,user=pending_user)
 					except ObjectDoesNotExist:
 						return Response('User given is not registered or not in the group', status=status.HTTP_400_BAD_REQUEST)
-					if request.data['accepted']:#Demande d'ajout acceptée
+					if request.data['accepted']==True:#Demande d'ajout acceptée
 						if pending_user_group_status.status==GroupStatus.PENDING:
 							pending_user_group_status.status=GroupStatus.MEMBER
 							pending_user_group_status.save()
@@ -77,6 +120,29 @@ class GroupViewSet(viewsets.ModelViewSet):
 			status_member = GroupStatus(group=group,user=up,status=GroupStatus.PENDING)
 			status_member.save()
 			return Response('Demand created and sent to the group', status=status.HTTP_201_CREATED)
+		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+
+	@detail_route(methods=['post'])
+	def invite(self,request, pk=None):
+		if request.user.is_authenticated() :
+			up=UserProfile.objects.get(user=request.user)
+			group=Group.objects.get(pk=pk)
+			if is_user_admin_in_group(up,group):
+				invited_users_id = request.data['users']
+				for pk_user in invited_users_id:
+					try:
+						invited_user = UserProfile.objects.get(pk=pk_user)
+					except ObjectDoesNotExist:
+						return Response('User given is not registered', status=status.HTTP_400_BAD_REQUEST)
+					try:
+						invited_user_group_status = GroupStatus.objects.get(group=group,user=invited_user)
+						return Response('User given is already in the group or asked to join it', status=status.HTTP_400_BAD_REQUEST)
+					except ObjectDoesNotExist:
+						invited_user_group_status = GroupStatus(group=group,user=invited_user,status=GroupStatus.INVITED)
+						invited_user_group_status.save()
+						return Response('User invited to the group with success', status=status.HTTP_200_OK)
+			else:
+				return Response('You are not admin of this group', status=status.HTTP_403_FORBIDDEN)		
 		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
 	@detail_route(methods=['get'])
