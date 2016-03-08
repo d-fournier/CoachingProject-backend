@@ -22,9 +22,10 @@ class GroupPermission(permissions.BasePermission):
 
 	def has_object_permission(self, request, view, obj):
 		if obj.private :
-			up = UserProfile.objects.get(user=request.user)
-			if is_user_in_group(up,obj):
-				return True
+			if request.user.is_authenticated() :
+				up = UserProfile.objects.get(user=request.user)
+				if is_user_in_group(up,obj):
+					return True
 			return False
 		else:
 			if request.method in permissions.SAFE_METHODS:
