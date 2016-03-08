@@ -7,6 +7,7 @@ class Group(models.Model):
 	name = models.CharField(max_length=100)
 	description = models.TextField()
 	sport = models.ForeignKey(Sport, blank=False)
+	city = models.CharField(max_length=60)
 	creation_date = models.DateField(auto_now_add=True,auto_now=False)
 	private = models.BooleanField(default=False)
 
@@ -20,10 +21,12 @@ class GroupStatus(models.Model):
 	ADMIN = 'ADM'
 	MEMBER = 'MEM'
 	PENDING = 'PEN'
+	INVITED = 'INV'
 	user_status = (
         (ADMIN, 'Admin'),
         (MEMBER, 'Member'),
         (PENDING, 'Pending')
+        (INVITED,'Invited')
     )
 	status= models.CharField(max_length=3,choices=user_status, blank=False, null=False)
 
