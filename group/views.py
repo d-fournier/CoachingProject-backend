@@ -97,6 +97,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 				invited_user_group_status.status = GroupStatus.MEMBER
 				invited_user_group_status.save()
 				group.members+=1
+				group.save()
 				return Response('Invitation successfully accepted', status=status.HTTP_200_OK)
 			else:
 				invited_user_group_status.delete()
@@ -124,6 +125,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 							pending_user_group_status.status=GroupStatus.MEMBER
 							pending_user_group_status.save()
 							group.members+=pending_users_id.size()
+							group.save()
 							return Response('User added to the group with success', status=status.HTTP_200_OK)
 						else:
 							return Response('User given is already in the group', status=status.HTTP_400_BAD_REQUEST)
@@ -198,10 +200,11 @@ class GroupViewSet(viewsets.ModelViewSet):
 	@detail_route(methods=['get'])
 	def members(self,request, pk=None):
 		if request.user.is_authenticated() :
+			up = UserProfile.objects.get(user=request.user)
 			group = get_group(pk)
 			if group==None:
 				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
-			if group.private:
+			if group.private and not is_user_in_group(up,group):
 				return Response('This group is private', status=status.HTTP_403_FORBIDDEN)
 			status_members = GroupStatus.objects.filter(group=group)
 			members = []
