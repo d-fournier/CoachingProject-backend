@@ -3,7 +3,6 @@ from .serializers import GroupReadSerializer, GroupCreateSerializer
 from .models import Group, GroupStatus
 from .permissions import GroupPermission
 from .functions import *
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from user.models import UserProfile
 from user.serializers import UserProfileReadSerializer
@@ -55,7 +54,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 	def messages(self,request, pk=None):
 		if request.user.is_authenticated():
 			up=UserProfile.objects.get(user=request.user)
-			group=Group.objects.get(pk=pk)
+			group = get_group(pk)
+			if group==None:
+				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			if is_user_in_group(up,group):
 				queryset=Message.objects.filter(to_group=group).order_by('time')
 			else:
@@ -84,7 +85,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 	@detail_route(methods=['post'])
 	def accept_invite(self,request, pk=None):
 		if request.user.is_authenticated() :
-			group=Group.objects.get(pk=pk)
+			group = get_group(pk)
+			if group==None:
+				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			up = UserProfile.objects.get(user=request.user)
 			try:
 				invited_user_group_status = GroupStatus.objects.get(group=group,user=up,status=GroupStatus.INVITED)
@@ -105,7 +108,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 	def accept_join(self,request, pk=None):
 		if request.user.is_authenticated() :
 			up=UserProfile.objects.get(user=request.user)
-			group=Group.objects.get(pk=pk)
+			group = get_group(pk)
+			if group==None:
+				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			if is_user_admin_in_group(up,group):
 				pending_users_id = request.data['users']
 				for pk_user in pending_users_id:
@@ -132,7 +137,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 	@detail_route(methods=['post'])
 	def join(self,request, pk=None):
 		if request.user.is_authenticated() :
-			group=Group.objects.get(pk=pk)
+			group = get_group(pk)
+			if group==None:
+				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			if group.private:
 				return Response('This group is private', status=status.HTTP_403_FORBIDDEN)
 			up = UserProfile.objects.get(user=request.user)
@@ -147,7 +154,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 	def invite(self,request, pk=None):
 		if request.user.is_authenticated() :
 			up=UserProfile.objects.get(user=request.user)
-			group=Group.objects.get(pk=pk)
+			group = get_group(pk)
+			if group==None:
+				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			if is_user_admin_in_group(up,group):
 				invited_users_id = request.data['users']
 				for pk_user in invited_users_id:
@@ -169,7 +178,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 	@detail_route(methods=['get'])
 	def pending_members(self,request, pk=None):
 		if request.user.is_authenticated() :
-			group=Group.objects.get(pk=pk)
+			group = get_group(pk)
+			if group==None:
+				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			up = UserProfile.objects.get(user=request.user)
 			if is_user_admin_in_group(up,group):
 				status_members = GroupStatus.objects.filter(group=group, status=GroupStatus.PENDING)
@@ -177,7 +188,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 				for s in status_members:
 					members.append(s.user)
 				serializer = UserProfileReadSerializer(members, many=True)
-				return Response(serializer.data, status=status.HTTP_201_CREATED)
+				return Response(serializer.data, status=status.HTTP_200_OK)
 			else:
 				return Response('You are not admin of this group', status=status.HTTP_403_FORBIDDEN)
 		else:
@@ -187,7 +198,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 	@detail_route(methods=['get'])
 	def members(self,request, pk=None):
 		if request.user.is_authenticated() :
-			group=Group.objects.get(pk=pk)
+			group = get_group(pk)
+			if group==None:
+				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			if group.private:
 				return Response('This group is private', status=status.HTTP_403_FORBIDDEN)
 			status_members = GroupStatus.objects.filter(group=group)
@@ -195,7 +208,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 			for s in status_members:
 				members.append(s.user)
 			serializer = UserProfileReadSerializer(members, many=True)
-			return Response(serializer.data, status=status.HTTP_201_CREATED)
+			return Response(serializer.data, status=status.HTTP_200_OK)
 		else:
 			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 		

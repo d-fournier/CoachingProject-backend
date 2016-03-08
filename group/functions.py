@@ -1,4 +1,5 @@
-from group.models import GroupStatus
+from group.models import GroupStatus, Group
+from django.core.exceptions import ObjectDoesNotExist
 
 def is_user_in_group(user,group):
 	try:
@@ -18,3 +19,9 @@ def is_user_admin_in_group(user,group):
 		return False
 	except ObjectDoesNotExist :
 		return False
+
+def get_group(pk):
+	try :
+		return Group.objects.get(pk=pk)
+	except ObjectDoesNotExist:
+		return None
