@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .serializers import MessageReadSerializer, MessageCreateSerializer, MessageUpdateSerializer
 from .models import Message
 from user.models import UserProfile
+from group.models import GroupStatus, Group
 from device import scripts
 from .permissions import MessagePermission
 from rest_framework import viewsets, permissions
@@ -26,7 +27,12 @@ class MessageViewSet(viewsets.ModelViewSet):
 		if self.request.user.is_superuser:
 			queryset = Message.objects.all()	
 		elif self.request.user.is_authenticated():
-			queryset = Message.objects.filter(Q(to_relation__coach__user=self.request.user)|Q(to_relation__trainee__user=self.request.user))
+			up = UserProfile.objects.get(user=self.request.user)
+			groupStatus = GroupStatus.objects.filter(Q(user=up,status=GroupStatus.MEMBER)|Q(user=up,status=GroupStatus.ADMIN))
+			groups = []
+			for gs in groupStatus :
+				groups.append(Group.objects.get(pk=gs.group.id))
+			queryset = Message.objects.filter(Q(to_relation__coach__user=self.request.user)|Q(to_relation__trainee__user=self.request.user)|Q(to_group__in=groups))
 		else:
 			queryset=Message.objects.none()
 		return queryset
