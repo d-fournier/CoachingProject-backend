@@ -22,6 +22,8 @@ class GroupViewSet(viewsets.ModelViewSet):
 		return GroupCreateSerializer
 
 	def get_queryset(self):
+		if self.request.user.is_superuser:
+			return Group.objects.all()
 		queryset = Group.objects.none()
 		if self.action=='list':
 			if self.request.user.is_authenticated():
