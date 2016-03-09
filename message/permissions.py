@@ -2,6 +2,7 @@ from rest_framework import permissions
 from .models import Message
 from user.models import UserProfile
 from .serializers import MessageReadSerializer
+from group.functions import is_user_in_group
 
 class MessagePermission(permissions.BasePermission):
 	
@@ -34,7 +35,7 @@ class MessagePermission(permissions.BasePermission):
 					if relation.coach==up or relation.trainee==up :
 						return True
 				if group is not None :
-					if up in group.members.all() :
+					if is_user_in_group(up,group) :
 						return True
 				return False
 			else:

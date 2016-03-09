@@ -46,17 +46,18 @@ def sendToGCM(users,data):
 		for d in devices :
 			tokens.append(d.registration_token)
 	headers = {'Authorization':'key='+settings.GCM_API_KEY, 'Content-type':'application/json'}
-	payload = json.dumps({'registration_ids':tokens,'data':data})
-	r = requests.post(GCM_SEND_URL, data=payload, headers=headers)
-	print('STATUS CODE GCM : \n' + str(r.status_code))
-	print('RESPONSE FROM GCM : \n' + r.text)
-	response = json.loads(r.text)
-	index = 0
-	for res in response['results']:
-		if 'error' in res:
-			token = tokens[index]
-			devices_to_delete = Device.objects.filter(registration_token=token)
-			for d in devices_to_delete:
-				d.delete()
-		index += 1
+	if tokens :
+		payload = json.dumps({'registration_ids':tokens,'data':data})
+		r = requests.post(GCM_SEND_URL, data=payload, headers=headers)
+		print('STATUS CODE GCM : \n' + str(r.status_code))
+		print('RESPONSE FROM GCM : \n' + r.text)
+		response = json.loads(r.text)
+		index = 0
+		for res in response['results']:
+			if 'error' in res:
+				token = tokens[index]
+				devices_to_delete = Device.objects.filter(registration_token=token)
+				for d in devices_to_delete:
+					d.delete()
+			index += 1
 			

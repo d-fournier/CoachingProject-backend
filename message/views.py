@@ -6,6 +6,7 @@ from device import scripts
 from .permissions import MessagePermission
 from rest_framework import viewsets, permissions
 from django.db.models import Q
+from group.functions import is_user_in_group, get_members
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework import status
@@ -44,9 +45,9 @@ class MessageViewSet(viewsets.ModelViewSet):
 				raise ValidationError('You cannot send a message because you are not involved in this relation')
 			users.append(relation.trainee if relation.coach==up else relation.coach)
 		if group is not None :
-			if up not in group.members.all():
+			if not is_user_in_group(up,group):
 				raise ValidationError('You cannot send a message because you are not a member of this group')
-			users.append(group.members.all())
+			users = get_members(group)
 			users.remove(up)		
 		m = serializer.save(from_user=up)
 		scripts.sendGCMNewMessage(users=users,message=m)
@@ -59,6 +60,6 @@ class MessageViewSet(viewsets.ModelViewSet):
 		relation, group = message.to_relation, message.to_group
 		if relation is not None and relation.coach!=up and relation.trainee!=up :
 			raise ValidationError('You cannot update this message because you are not involved in this relation')
-		if group is not None and up not in group.members.all():
+		if group is not None and not is_user_in_group(up,group):
 			raise ValidationError('You cannot update this message because you are not a member of this group')
 		serializer.save()

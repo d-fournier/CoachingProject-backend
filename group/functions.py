@@ -25,3 +25,11 @@ def get_group(pk):
 		return Group.objects.get(pk=pk)
 	except ObjectDoesNotExist:
 		return None
+
+def get_members(group):
+	users = []
+	group_status = GroupStatus.objects.filter(group=group)
+	for gs in group_status:
+		if gs.status!=GroupStatus.PENDING and gs.status!=GroupStatus.INVITED:
+			users.append(gs.user)
+	return users
