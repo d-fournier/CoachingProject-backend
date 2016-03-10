@@ -22,7 +22,7 @@ class GroupPermission(permissions.BasePermission):
 
 	def has_object_permission(self, request, view, obj):
 		if obj.private :
-			if request.is_superuser:
+			if request.user.is_superuser:
 				return True
 			if request.user.is_authenticated() :
 				up = UserProfile.objects.get(user=request.user)
