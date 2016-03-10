@@ -9,6 +9,7 @@ def blog_directory_path(instance, filename):
 class Post(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)
     date = models.DateTimeField(auto_now_add=True)
+    last_modification_date = models.DateTimeField(auto_now=True)
     sport = models.ForeignKey(Sport, blank=False)
     title = models.CharField(max_length=140)
     description = models.TextField(max_length=400, blank=True)

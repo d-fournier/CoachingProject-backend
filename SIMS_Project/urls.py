@@ -27,6 +27,7 @@ from relation.views import RelationViewSet
 from message.views import MessageViewSet
 from group.views import GroupViewSet
 from device.views import DeviceViewSet
+from blog.views import PostViewSet
 
 router = routers.DefaultRouter()
 router.register(r'sports', SportViewSet)
@@ -36,6 +37,7 @@ router.register(r'relations', RelationViewSet)
 router.register(r'messages', MessageViewSet, base_name='messages')
 router.register(r'groups',GroupViewSet,base_name='groups')
 router.register(r'devices',DeviceViewSet,base_name='devices')
+router.register(r'blog',PostViewSet,base_name='blog')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -45,4 +47,3 @@ urlpatterns = [
 ]
 if not settings.AWS_ACTIVATED:
     urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
