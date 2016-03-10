@@ -226,7 +226,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 				return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
 			if group.private and not is_user_in_group(up,group):
 				return Response('This group is private', status=status.HTTP_403_FORBIDDEN)
-			status_members = GroupStatus.objects.filter(group=group)
+			status_members = GroupStatus.objects.filter(Q(group=group,status=GroupStatus.MEMBER)|Q(group=group,status=GroupStatus.ADMIN))
 			members = []
 			for s in status_members:
 				members.append(s.user)
