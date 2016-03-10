@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'relation',
     'group',
     'device',
-    'requests'
+    'requests',
+    'blog'
 ]
 
 REST_FRAMEWORK = {
