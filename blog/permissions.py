@@ -11,4 +11,12 @@ class PostAccessPermission(BasePermission):
 		return False
 
 	def has_object_permission(self, request, view, obj):
-		return (obj.author.user == request.user) | request.user.is_superuser
+		if request.method in SAFE_METHODS:
+			return True
+		else:
+			if request.user.is_superuser:
+				return True
+			elif request.user.is_authenticated() and request.user == obj.author.user:
+				return True
+			else:
+				return False

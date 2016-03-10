@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Post
+from user.models import UserProfile
 from .permissions import PostAccessPermission
 from .serializers import PostReadSerializer, PostCreateUpdateSerializer
 
@@ -17,6 +18,5 @@ class PostViewSet(viewsets.ModelViewSet):
 			return PostCreateUpdateSerializer
 
 	def perform_create(self,serializer):
-		data = serializer.validated_data
-		author = UserProfile.objects.get(user=self.request.user)
-		serializer.save(author=author)
+		up = UserProfile.objects.get(user=self.request.user)
+		serializer.save(author=up)
