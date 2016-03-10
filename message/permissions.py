@@ -30,7 +30,7 @@ class MessagePermission(permissions.BasePermission):
 				return True
 			if request.user.is_authenticated():
 				up = UserProfile.objects.get(user=request.user)
-				relation = obj.to_relation, obj.to_group
+				relation, group = obj.to_relation, obj.to_group
 				if relation is not None :
 					if relation.coach==up or relation.trainee==up :
 						return True
