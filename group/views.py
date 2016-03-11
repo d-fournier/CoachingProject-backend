@@ -144,7 +144,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 						if pending_user_group_status.status==GroupStatus.PENDING:
 							pending_user_group_status.status=GroupStatus.MEMBER
 							pending_user_group_status.save()
-							group.members+=pending_users_id.size()
+							group.members+=len(pending_users_id)
 							group.save()
 							return Response('User added to the group with success', status=status.HTTP_200_OK)
 						else:
