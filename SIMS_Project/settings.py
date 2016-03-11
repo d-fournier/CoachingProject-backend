@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'relation',
     'group',
     'device',
-    'requests'
+    'requests',
+    'blog'
 ]
 
 REST_FRAMEWORK = {
@@ -58,6 +59,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 MIDDLEWARE_CLASSES = [
