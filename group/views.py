@@ -139,19 +139,19 @@ class GroupViewSet(viewsets.ModelViewSet):
 						pending_user = UserProfile.objects.get(pk=pk_user)
 						pending_user_group_status = GroupStatus.objects.get(group=group,user=pending_user)
 					except ObjectDoesNotExist:
-						return Response('User given is not registered or not in the group', status=status.HTTP_400_BAD_REQUEST)
+						return Response('User is not registered or not in the group', status=status.HTTP_400_BAD_REQUEST)
 					if request.data['accepted']==True:#Demande d'ajout acceptée
 						if pending_user_group_status.status==GroupStatus.PENDING:
 							pending_user_group_status.status=GroupStatus.MEMBER
 							pending_user_group_status.save()
 							group.members+=len(pending_users_id)
 							group.save()
-							return Response('User added to the group with success', status=status.HTTP_200_OK)
+							return Response(pending_user.displayName+' added to the group with success', status=status.HTTP_200_OK)
 						else:
-							return Response('User given is already in the group', status=status.HTTP_400_BAD_REQUEST)
+							return Response(pending_user.displayName+' is already in the group', status=status.HTTP_400_BAD_REQUEST)
 					else:#Demande d'ajout refusée
 						pending_user_group_status.delete()
-						return Response('Demand from user refused', status=status.HTTP_200_OK)
+						return Response('Demand from '+pending_user.displayName+' refused', status=status.HTTP_200_OK)
 			else:
 				return Response('You are not admin of this group', status=status.HTTP_403_FORBIDDEN)		
 		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
@@ -188,11 +188,11 @@ class GroupViewSet(viewsets.ModelViewSet):
 						return Response('User given is not registered', status=status.HTTP_400_BAD_REQUEST)
 					try:
 						invited_user_group_status = GroupStatus.objects.get(group=group,user=invited_user)
-						return Response('User given is already in the group or asked to join it', status=status.HTTP_400_BAD_REQUEST)
+						return Response(invited_user.displayName+' is already in the group or asked to join it', status=status.HTTP_400_BAD_REQUEST)
 					except ObjectDoesNotExist:
 						invited_user_group_status = GroupStatus(group=group,user=invited_user,status=GroupStatus.INVITED)
 						invited_user_group_status.save()
-						return Response('User invited to the group with success', status=status.HTTP_200_OK)
+						return Response(invited_user.displayName+' invited to the group with success', status=status.HTTP_200_OK)
 			else:
 				return Response('You are not admin of this group', status=status.HTTP_403_FORBIDDEN)		
 		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
