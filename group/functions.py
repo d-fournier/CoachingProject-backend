@@ -10,6 +10,13 @@ def is_user_in_group(user,group):
 	except ObjectDoesNotExist :
 		return False
 
+def is_user_in_group_or_pending(user,group):
+	try:
+		group_status = GroupStatus.objects.get(group=group,user=user)
+		return True
+	except ObjectDoesNotExist :
+		return False
+
 
 def is_user_admin_in_group(user,group):
 	try:

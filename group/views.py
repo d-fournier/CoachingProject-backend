@@ -167,16 +167,18 @@ class GroupViewSet(viewsets.ModelViewSet):
 			if group.private:
 				return Response('This group is private', status=status.HTTP_403_FORBIDDEN)
 			up = UserProfile.objects.get(user=request.user)
-			if is_user_in_group(up,group):
-				return Response('You are already in this group', status=status.HTTP_403_FORBIDDEN)
-			status_member = GroupStatus(group=group,user=up,status=GroupStatus.PENDING)
-			status_member.save()
-			admins = GroupStatus.objects.get(group=group,status=GroupStatus.ADMIN)
-			users = []
-			for a in admins:
-				users.appends(a.user)
-			scripts.sendGCMGroupJoin(users,group)
-			return Response('Demand created and sent to the group', status=status.HTTP_201_CREATED)
+			try:
+				status_pending = GroupStatus.objects.get(group=group,user=up)
+				return Response('You are already in the group or asked to join it', status=status.HTTP_400_BAD_REQUEST)
+			except ObjectDoesNotExist:
+				status_pending = GroupStatus(group=group,user=up,status=GroupStatus.PENDING)
+				status_pending.save()
+				admins = GroupStatus.objects.get(group=group,status=GroupStatus.ADMIN)
+				users = []
+				for a in admins:
+					users.appends(a.user)
+				scripts.sendGCMGroupJoin(users,group)
+				return Response('Demand created and sent to the group', status=status.HTTP_201_CREATED)
 		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
 	@detail_route(methods=['post'])
