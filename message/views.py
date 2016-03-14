@@ -59,13 +59,10 @@ class MessageViewSet(viewsets.ModelViewSet):
 		scripts.sendGCMNewMessage(users=users,message=m)
 		
 
-	def perform_update(self,serializer):
-		data = serializer.validated_data
-		up = UserProfile.objects.get(user=self.request.user)
+	def perform_partial_update(self,serializer):
+		try :
+			associated_file = serializer.validated_data['associated_file']
+		except KeyError:
+			raise ValidationError('Field missing : associated_file')
 		message = serializer.instance
-		relation, group = message.to_relation, message.to_group
-		if relation is not None and relation.coach!=up and relation.trainee!=up :
-			raise ValidationError('You cannot update this message because you are not involved in this relation')
-		if group is not None and not is_user_in_group(up,group):
-			raise ValidationError('You cannot update this message because you are not a member of this group')
-		serializer.save()
+		message.associated_file = associated_file
