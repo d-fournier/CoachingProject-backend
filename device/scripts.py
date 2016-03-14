@@ -3,6 +3,7 @@ import json
 from user.models import UserProfile
 from message.serializers import MessageReadSerializer
 from relation.serializers import RelationReadSerializer
+from group.serializers import GroupReadSerializer
 from device.models import Device
 from django.conf import settings
 
@@ -35,6 +36,27 @@ def sendGCMCoachingEnd(users,relation):
 	serial = RelationReadSerializer(relation)
 	data['content'] = serial.data
 	data['type']='coaching_end'
+	sendToGCM(users=users,data=data)
+
+def sendGCMGroupInvite(users,group):
+	data = {}
+	serial = GroupReadSerializer(group)
+	data['content'] = serial.data
+	data['type']='group_invitation'
+	sendToGCM(users=users,data=data)
+
+def sendGCMGroupJoin(users,group):
+	data = {}
+	serial = GroupReadSerializer(group)
+	data['content'] = serial.data
+	data['type']='group_join'
+	sendToGCM(users=users,data=data)
+
+def sendGCMGroupJoinAccepted(users,group):
+	data = {}
+	serial = GroupReadSerializer(group)
+	data['content'] = serial.data
+	data['type']='group_join_accepted'
 	sendToGCM(users=users,data=data)
 	
 
