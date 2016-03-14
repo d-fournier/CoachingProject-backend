@@ -44,13 +44,10 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['get'])
 	def blog(self,request,pk=None):
-		if request.user.is_authenticated() :
-			up = UserProfile.objects.get(user=request.user)
-			posts = Post.objects.filter(author=up).order_by('last_modification_date')
-			serializer = PostReadSerializer(posts,many=True)
-			return Response(serializer.data, status=status.HTTP_200_OK)
-		else:
-			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+		up = UserProfile.objects.get(pk=pk)
+		posts = Post.objects.filter(author=up).order_by('last_modification_date')
+		serializer = PostReadSerializer(posts,many=True)
+		return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 	def perform_update(self, serializer):

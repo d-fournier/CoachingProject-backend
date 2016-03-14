@@ -46,7 +46,7 @@ class RootView(views.APIView):
                   for key, url_name in self.get_urls_mapping().items()])
         )
 
-
+'displayName','isCoach','city'
 class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
     """
     Use this endpoint to register new user.
@@ -70,28 +70,23 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
 
 
     def perform_create(self, serializer):
-        try:   
-            displayName = self.request.data['displayName']
-            birthdate = datetime.strptime(self.request.data['birthdate'],'%Y-%m-%d')
-            isCoach = (self.request.data['isCoach'] == 'true')
-            city = self.request.data['city']
-            description = self.request.data['description']
-            levels = self.request.data['levels']  
+        key_set = set([x for x in self.request.data.keys()])
+        if not set(['displayName','isCoach','city']).issubset(key_set):
+            return False    
+        profile_data = {}
+        for k in key_set:
+            if k in set(['displayName','isCoach','city','birthdate','description']):
+                profile_data[k]=self.request.data[k]
+        print(profile_data)
+        u = serializer.save()
+        up = UserProfile.objects.create(user=u,**profile_data)
 
-            u = serializer.save()
-            signals.user_registered.send(sender=self.__class__, user=u, request=self.request)
-            if settings.get('SEND_ACTIVATION_EMAIL'):
-                self.send_email(**self.get_send_email_kwargs(u))
-             
-            up = UserProfile.objects.create(user=u,displayName=displayName,birthdate=birthdate,isCoach=isCoach,city=city,description=description)
-            up.levels = levels
-            up.save()
-            return True
+        levels = self.request.data['levels']
 
-        except KeyError:
-            return False
-
-
+        up.user=u
+        up.levels=levels
+        up.save()
+        return True
 
     def get_email_context(self, user):
         context = super(RegistrationView, self).get_email_context(user)
