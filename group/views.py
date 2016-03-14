@@ -7,7 +7,7 @@ from django.db.models import Q
 from user.models import UserProfile
 from user.serializers import UserProfileReadSerializer
 from message.models import Message
-from devices import scripts
+from device import scripts
 from message.serializers import MessageReadSerializer
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
