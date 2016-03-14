@@ -7,6 +7,7 @@ from django.db.models import Q
 from user.models import UserProfile
 from user.serializers import UserProfileReadSerializer
 from message.models import Message
+from devices import scripts
 from message.serializers import MessageReadSerializer
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
@@ -146,6 +147,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 							pending_user_group_status.save()
 							group.members+=len(pending_users_id)
 							group.save()
+							scripts.sendGCMGroupJoinAccepted([pending_user],group)
 							return Response(pending_user.displayName+' added to the group with success', status=status.HTTP_200_OK)
 						else:
 							return Response(pending_user.displayName+' is already in the group', status=status.HTTP_400_BAD_REQUEST)
@@ -169,6 +171,11 @@ class GroupViewSet(viewsets.ModelViewSet):
 				return Response('You are already in this group', status=status.HTTP_403_FORBIDDEN)
 			status_member = GroupStatus(group=group,user=up,status=GroupStatus.PENDING)
 			status_member.save()
+			admins = GroupStatus.objects.get(group=group,status=GroupStatus.ADMIN)
+			users = []
+			for a in admins:
+				users.appends(a.user)
+			scripts.sendGCMGroupJoin(users,group)
 			return Response('Demand created and sent to the group', status=status.HTTP_201_CREATED)
 		return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
@@ -192,6 +199,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 					except ObjectDoesNotExist:
 						invited_user_group_status = GroupStatus(group=group,user=invited_user,status=GroupStatus.INVITED)
 						invited_user_group_status.save()
+						scripts.sendGCMGroupInvite([invited_user],group)
 						return Response(invited_user.displayName+' invited to the group with success', status=status.HTTP_200_OK)
 			else:
 				return Response('You are not admin of this group', status=status.HTTP_403_FORBIDDEN)		
