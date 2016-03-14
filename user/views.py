@@ -45,7 +45,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 	@detail_route(methods=['get'])
 	def blog(self,request,pk=None):
 		up = UserProfile.objects.get(pk=pk)
-		posts = Post.objects.filter(author=up).order_by('last_modification_date')
+		posts = Post.objects.filter(author=up).order_by('-last_modification_date')
 		serializer = PostReadSerializer(posts,many=True)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 
