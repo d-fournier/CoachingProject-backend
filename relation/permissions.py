@@ -4,7 +4,9 @@ class RelationAccessPermission(BasePermission):
 	def has_permission(self,request, view):
 		if request.method in SAFE_METHODS :
 			return True
-		if request.user.is_authenticated():
+		if request.is_superuser:
+			return True
+		if request.user.is_authenticated() and request.method!='DELETE':
 			return True
 		return False
 

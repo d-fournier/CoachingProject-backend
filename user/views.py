@@ -2,9 +2,11 @@ from django.shortcuts import render
 from .serializers import UserProfileReadSerializer, UserProfileCreateSerializer
 from .models import UserProfile
 from .permissions import UserProfilePermission
+from blog.models import Post
+from blog.serializers import PostReadSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.decorators import list_route
+from rest_framework.decorators import list_route, detail_route
 
 # Create your views here.
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -40,6 +42,16 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 			return Response(serializer.data, status=status.HTTP_200_OK,headers=headers)
 		return Response('You are not connected', status=status.HTTP_403_FORBIDDEN)
 
+	@detail_route(methods=['get'])
+	def blog(self,request,pk=None):
+		if request.user.is_authenticated() :
+			up = UserProfile.objects.get(user=request.user)
+			posts = Post.objects.filter(author=up).order_by('last_modification_date')
+			serializer = PostReadSerializer(posts,many=True)
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		else:
+			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+
 
 	def perform_update(self, serializer):
 		oldUp = UserProfile.objects.get(user=self.request.user)
@@ -49,3 +61,4 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 	def perform_destroy(self, instance):
 		instance.picture.delete()
 		instance.delete()
+
