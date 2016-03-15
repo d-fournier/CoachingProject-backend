@@ -154,7 +154,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 						if pending_user_group_status.status==GroupStatus.PENDING:
 							pending_user_group_status.status=GroupStatus.MEMBER
 							pending_user_group_status.save()
-							group.members+=len(pending_users_id)
+							group.members= F('members') + len(pending_users_id)
 							group.save()
 							scripts.sendGCMGroupJoinAccepted([pending_user],group)
 							return Response(pending_user.displayName+' added to the group with success', status=status.HTTP_200_OK)
@@ -182,7 +182,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 			except ObjectDoesNotExist:
 				status_pending = GroupStatus(group=group,user=up,status=GroupStatus.PENDING)
 				status_pending.save()
-				admins = GroupStatus.objects.get(group=group,status=GroupStatus.ADMIN)
+				admins = GroupStatus.objects.filter(group=group,status=GroupStatus.ADMIN)
 				users = []
 				for a in admins:
 					users.appends(a.user)
