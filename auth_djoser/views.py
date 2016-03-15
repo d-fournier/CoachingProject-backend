@@ -27,8 +27,8 @@ class RootView(views.APIView):
         'change-password': 'set_password',
         'password-reset': 'password_reset',
         'password-reset-confirm': 'password_reset_confirm',
-        'login':'login',
-        'logout':'logout'
+        'login': 'login',
+        'logout': 'logout'
     }
     urls_extra_mapping = None
 
@@ -46,7 +46,10 @@ class RootView(views.APIView):
                   for key, url_name in self.get_urls_mapping().items()])
         )
 
-'displayName','isCoach','city'
+
+'displayName', 'isCoach', 'city'
+
+
 class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
     """
     Use this endpoint to register new user.
@@ -68,23 +71,23 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
         else:
             return Response('Missing arguments for UserProfile', status=status.HTTP_400_BAD_REQUEST)
 
-
     def perform_create(self, serializer):
         key_set = set([x for x in self.request.data.keys()])
-        if not set(['displayName','isCoach','city']).issubset(key_set):
-            return False    
+        if not {'displayName', 'isCoach', 'city'}.issubset(key_set):
+            return False
         profile_data = {}
         for k in key_set:
-            if k in set(['displayName','isCoach','city','birthdate','description']):
-                profile_data[k]=self.request.data[k]
+            if k in {'displayName', 'isCoach', 'city', 'birthdate', 'description'}:
+                profile_data[k] = self.request.data[k]
         print(profile_data)
         u = serializer.save()
-        up = UserProfile.objects.create(user=u,**profile_data)
-
-        levels = self.request.data['levels']
-
-        up.user=u
-        up.levels=levels
+        up = UserProfile.objects.create(user=u, **profile_data)
+        try:
+            levels = self.request.data['levels']
+            up.levels = levels
+        except KeyError:
+            pass
+        up.user = u
         up.save()
         return True
 
