@@ -89,6 +89,15 @@ class GroupViewSet(viewsets.ModelViewSet):
 		else:
 			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
+	@detail_route(methods=['get'])
+	def is_member(self,request, pk=None):
+		if request.user.is_authenticated():
+			up=UserProfile.objects.get(user=request.user)
+			group = get_group(pk)
+			return Response(is_user_in_group(up,group),status=status.HTTP_200_OK)
+		else:
+			return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+
 	@list_route()
 	def my_invitations(self,request):
 		if request.user.is_authenticated():
