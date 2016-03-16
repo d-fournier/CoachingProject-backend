@@ -130,7 +130,7 @@ class GroupViewSet(viewsets.ModelViewSet):
             if request.data['accepted']:
                 invited_user_group_status.status = GroupStatus.MEMBER
                 invited_user_group_status.save()
-                group.members += 1
+                group.members = F('members') + 1
                 group.save()
                 return Response('Invitation successfully accepted', status=status.HTTP_200_OK)
             else:
@@ -225,6 +225,28 @@ class GroupViewSet(viewsets.ModelViewSet):
             else:
                 return Response('You are not admin of this group', status=status.HTTP_403_FORBIDDEN)
         return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+
+    @detail_route(methods=['post'])
+    def leave(self, request, pk=None):
+        if request.user.is_authenticated():
+            up = UserProfile.objects.get(user=request.user)
+            group = get_group(pk)
+            if group is None:
+                return Response('Group not found', status=status.HTTP_404_NOT_FOUND)
+            if not is_user_admin_in_group(up,group):
+                try:
+                    leave_user_status = GroupStatus.objects.get(group=group, user=up)
+                    leave_user_status.delete()
+                    group.members = F('members') - 1
+                    if group.members == 0:
+                        group.delete()
+                    return Response('You left the group with success',status=status.HTTP_400_BAD_REQUEST)
+                except ObjectDoesNotExist:
+                    return Response('You are not in the group',status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response('You are admin of the group, you cannot leave it', status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
     @detail_route(methods=['get'])
     def pending_members(self, request, pk=None):
