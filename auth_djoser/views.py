@@ -47,9 +47,6 @@ class RootView(views.APIView):
         )
 
 
-'displayName', 'isCoach', 'city'
-
-
 class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
     """
     Use this endpoint to register new user.

@@ -1,16 +1,15 @@
-from django.shortcuts import render
-from .serializers import MessageReadSerializer, MessageCreateSerializer, MessageUpdateSerializer
-from .models import Message
-from user.models import UserProfile
-from group.models import GroupStatus, Group
-from device import scripts
-from .permissions import MessagePermission
-from rest_framework import viewsets, permissions
 from django.db.models import Q
-from group.functions import is_user_in_group, get_members
+from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework import status
+
+from device import scripts
+from group.functions import is_user_in_group, get_members
+from group.models import GroupStatus, Group
+from user.models import UserProfile
+from .models import Message
+from .permissions import MessagePermission
+from .serializers import MessageReadSerializer, MessageCreateSerializer, MessageUpdateSerializer
+
 
 # Create your views here.
 class MessageViewSet(viewsets.ModelViewSet):

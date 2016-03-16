@@ -1,12 +1,12 @@
-from django.shortcuts import render
-from .serializers import UserProfileReadSerializer, UserProfileCreateSerializer
-from .models import UserProfile
-from .permissions import UserProfilePermission
+from rest_framework import viewsets, status
+from rest_framework.decorators import list_route, detail_route
+from rest_framework.response import Response
+
 from blog.models import Post
 from blog.serializers import PostReadSerializer
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.decorators import list_route, detail_route
+from .models import UserProfile
+from .permissions import UserProfilePermission
+from .serializers import UserProfileReadSerializer, UserProfileCreateSerializer
 
 
 # Create your views here.

@@ -1,11 +1,11 @@
-from django.shortcuts import render
-from .serializers import LevelReadSerializer, LevelCreateSerializer
-from .models import Level
-from sport.models import Sport
-from sport.serializers import SportSerializer
 from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
 from rest_framework.decorators import detail_route
+from rest_framework.response import Response
+
+from sport.serializers import SportSerializer
+from .models import Level
+from .serializers import LevelReadSerializer, LevelCreateSerializer
+
 
 # Create your views here.
 class LevelViewSet(viewsets.ModelViewSet):

@@ -1,18 +1,17 @@
-from django.shortcuts import render
-from .serializers import RelationReadSerializer, RelationCreateSerializer, RelationUpdateSerializer
+from django.db import IntegrityError
+from django.db.models import Q
+from rest_framework import viewsets, status
+from rest_framework.decorators import detail_route
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
+from device import scripts
+from message.models import Message
+from message.serializers import MessageReadSerializer
+from user.models import UserProfile
 from .models import Relation
 from .permissions import RelationAccessPermission
-from device import scripts
-from rest_framework import viewsets, permissions, status
-from user.models import UserProfile
-from message.models import Message
-from django.db.models import Q
-from django.db import IntegrityError
-from rest_framework.exceptions import ValidationError
-from rest_framework.decorators import detail_route
-from rest_framework.response import Response
-from message.serializers import MessageReadSerializer
-
+from .serializers import RelationReadSerializer, RelationCreateSerializer, RelationUpdateSerializer
 
 
 # Create your views here.

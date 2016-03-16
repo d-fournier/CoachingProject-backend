@@ -1,9 +1,11 @@
-from rest_framework import viewsets, status
-from .permissions import DevicePermission
-from .models import Device
-from user.models import UserProfile
-from .serializers import DeviceReadSerializer,DeviceCreateSerializer
 from django.db import IntegrityError
+from rest_framework import viewsets
+
+from user.models import UserProfile
+from .models import Device
+from .permissions import DevicePermission
+from .serializers import DeviceReadSerializer,DeviceCreateSerializer
+
 
 # Create your views here.
 class DeviceViewSet(viewsets.ModelViewSet):
