@@ -240,6 +240,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                     group.members = F('members') - 1
                     if group.members == 0:
                         group.delete()
+                    group.save()
                     return Response('You left the group with success',status=status.HTTP_200_OK)
                 except ObjectDoesNotExist:
                     return Response('You are not in the group',status=status.HTTP_400_BAD_REQUEST)
