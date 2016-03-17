@@ -53,7 +53,7 @@ class MessageViewSet(viewsets.ModelViewSet):
                 raise ValidationError('You cannot send a message because you are not involved in this relation')
             if not relation.active:
                 raise ValidationError('This relation is not active anymore')
-        users.append(relation.trainee if relation.coach == up else relation.coach)
+            users.append(relation.trainee if relation.coach == up else relation.coach)
         if group is not None:
             if not is_user_in_group(up, group):
                 raise ValidationError('You cannot send a message because you are not a member of this group')
