@@ -14,4 +14,4 @@ class PostReadSerializer(serializers.ModelSerializer):
 class PostCreateUpdateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Post
-		fields = ('sport', 'title', 'description', 'content', 'picture')
+		fields = ('id','sport', 'title', 'description', 'content', 'picture')
