@@ -193,7 +193,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                 users = []
                 for a in admins:
                     users.append(a.user)
-                scripts.sendGCMGroupJoin(users, group)
+                scripts.sendGCMGroupJoin(users, group,up.displayName)
                 return Response('Demand created and sent to the group', status=status.HTTP_201_CREATED)
         return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 

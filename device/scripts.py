@@ -45,11 +45,12 @@ def sendGCMGroupInvite(users,group):
 	data['type']='group_invitation'
 	sendToGCM(users=users,data=data)
 
-def sendGCMGroupJoin(users,group):
+def sendGCMGroupJoin(users,group, username):
 	data = {}
 	serial = GroupReadSerializer(group)
 	data['content'] = serial.data
 	data['type']='group_join'
+	data['username']=username
 	sendToGCM(users=users,data=data)
 
 def sendGCMGroupJoinAccepted(users,group):
