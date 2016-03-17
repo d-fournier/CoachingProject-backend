@@ -17,9 +17,9 @@ class MessageReadSerializer(serializers.ModelSerializer):
 class MessageCreateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
-		fields = ('id','to_relation', 'to_group', 'content')
+		fields = ('id','to_relation', 'to_group', 'content', 'associated_file')
 
 class MessageUpdateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
-		fields = ('is_pinned','associated_file')
+		fields = ('is_pinned')
