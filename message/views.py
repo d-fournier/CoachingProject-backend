@@ -62,11 +62,3 @@ class MessageViewSet(viewsets.ModelViewSet):
         m = serializer.save(from_user=up)
         scripts.sendGCMNewMessage(users=users, message=m)
 
-
-def perform_partial_update(self, serializer):
-    try:
-        associated_file = serializer.validated_data['associated_file']
-    except KeyError:
-        raise ValidationError('Field missing : associated_file')
-    message = serializer.instance
-    message.associated_file = associated_file

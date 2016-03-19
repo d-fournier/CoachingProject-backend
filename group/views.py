@@ -116,6 +116,19 @@ class GroupViewSet(viewsets.ModelViewSet):
         else:
             return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
 
+    @list_route()
+    def my_joins(self, request):
+        if request.user.is_authenticated():
+            up = UserProfile.objects.get(user=request.user)
+            queryset = GroupStatus.objects.filter(user=up, status=GroupStatus.PENDING)
+            groups = []
+            for q in queryset:
+                groups.append(q.group)
+            serializer = GroupReadSerializer(groups, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response('You are not connected', status=status.HTTP_401_UNAUTHORIZED)
+
     @detail_route(methods=['post'])
     def accept_invite(self, request, pk=None):
         if request.user.is_authenticated():
