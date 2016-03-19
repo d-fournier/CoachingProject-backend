@@ -4,7 +4,7 @@ from relation.models import Relation
 from group.models import Group
 
 def message_directory_path(instance, filename):
-	return 'messages/{0}_{1}_{2}'.format(instance.id,instance.from_user.id,filename)
+	return 'messages/{0}_{1}'.format(instance.from_user.id,filename)
 
 # Create your models here.
 class Message(models.Model):
