@@ -20,12 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'c=#a@6ph&-w-v61bbw(m9ini*rjbx4%7jp-!5=!!2uhl)d3_8x'
+DEFAULT_KEY = 'c=#a@6ph&-w-v61bbw(m9ini*rjbx4%7jp-!5=!!2uhl)d3_8x'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', DEFAULT_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+debugValue = os.environ.get('DJANGO_DEBUG', 'True')
+DEBUG = debugValue == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +39,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'auth_djoser',
+    'user',
+    'level',
+    'sport',
+    'message',
+    'relation',
+    'group',
+    'device',
+    'requests',
+    'blog'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+}
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,15 +94,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'SIMS_Project.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+ # Database
+  # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {
-    'default': {
+DATABASE_TYPE = os.environ.get('DJANGO_DATABASE_TYPE', 'SQLITE3')
+if DATABASE_TYPE == 'SQLITE3':
+    DATABASES = {
+        'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+elif DATABASE_TYPE == 'POSTGRES':
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config()
+    }
 
 
 # Password validation
@@ -114,8 +144,57 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
+# Serve static files with Heroku
+STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+ os.path.join(BASE_DIR, 'static'),
+)
+
+# Check if AmazonS3 is enable
+awsS3AccessKeyId = os.environ.get('AWS_S3_ACCESS_KEY_ID', '')
+awsS3SecretAccessKey = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
+awsS3BucketName = os.environ.get('AWS_S3_BUCKET_NAME', '')
+
+AWS_ACTIVATED = False
+
+if awsS3AccessKeyId and awsS3SecretAccessKey and awsS3BucketName:
+    AWS_ACTIVATED = True
+    AWS_QUERYSTRING_AUTH = False
+    INSTALLED_APPS = INSTALLED_APPS + ['storages']
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    AWS_STORAGE_BUCKET_NAME = awsS3BucketName
+    AWS_S3_ACCESS_KEY_ID = awsS3AccessKeyId
+    AWS_S3_SECRET_ACCESS_KEY = awsS3SecretAccessKey
+else:
+    MEDIA_ROOT = 'media'
+    MEDIA_URL ='/media/'
+
+### HEROKU config
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Add Log to Heroku
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+        }
+    }
+}
+
+
+### GCM config for Cloud Messaging
+GCM_ACTIVATED = False
+# GCM_API_KEY = os.environ.get('GCM_API_KEY','')
+GCM_API_KEY = 'AIzaSyBjRzHw3ineF7H5xX38kezDVdtfSW4_5ms'
+
+if GCM_API_KEY:
+    GCM_ACTIVATED = True
